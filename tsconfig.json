@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": "./",
     "target": "esnext",
     "useDefineForClassFields": true,
     "module": "esnext",
@@ -13,7 +14,11 @@
     "lib": ["esnext", "dom"],
     "skipLibCheck": true,
     "declaration": true,
-    "types": ["three"]
+    "types": ["three"],
+    "paths": {
+      "@/*": ["src/*"],
+      "~/*": ["/*"]
+    }
   },
   "include": ["src/**/*.ts", "./src/typings/**/*"],
   "references": [{ "path": "./tsconfig.node.json" }]

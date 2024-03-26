@@ -12,6 +12,7 @@
     "three": "^0.162.0"
   },
   "devDependencies": {
+    "@types/node": "^20.11.30",
     "@types/three": "^0.162.0",
     "typescript": "^5.2.2",
     "unplugin-auto-import": "^0.17.5",
