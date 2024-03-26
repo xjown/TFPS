@@ -4,6 +4,7 @@ import type {
   WebGLRenderer as WebGLRendererType,
   PerspectiveCamera as PerspectiveCameraType,
 } from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 
 import ProxyObj from './ProxyObj';
 
@@ -13,6 +14,7 @@ export default class Core {
   renderer: WebGLRendererType;
   camera: PerspectiveCameraType;
   private _proxy: ProxyObj;
+  orbit_controls: OrbitControls;
 
   private static _instance: Core;
   constructor() {
@@ -25,8 +27,15 @@ export default class Core {
       0.1,
       1000
     );
-    this.camera.position.set(0, 0, 0);
     this._proxy = new ProxyObj(this);
+    this.orbit_controls = new OrbitControls(
+      this.camera,
+      this.renderer.domElement
+    );
+    this.orbit_controls.dampingFactor = 0.2;
+    this.orbit_controls.enableDamping = true;
+
+    this.camera.position.set(0, 0, 2);
 
     this._init();
   }
@@ -54,6 +63,7 @@ export default class Core {
     this.renderer.setAnimationLoop(() => {
       this.renderer.render(this.scene, this.camera);
       this._proxy.update(this.clock.getDelta());
+      this.orbit_controls.update();
     });
   }
 

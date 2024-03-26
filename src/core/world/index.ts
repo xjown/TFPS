@@ -16,17 +16,18 @@ export default class World {
         if (item.name === 'home001' || item.name === 'PointLight') {
           item.castShadow = true;
         }
-
-        if (item.name.includes('PointLight')) {
+        if (item.name.includes('Light')) {
           item.intensity *= 1000;
         }
-
         if (item.name === 'home002') {
           item.castShadow = true;
           item.receiveShadow = true;
         }
       });
       this._instance.scene.add(scene);
+
+      const light = new AmbientLight(0xff0000); // 柔和的白光
+      this._instance.scene.add(light);
     } catch (e) {
       console.error('加载模型失败', e);
     }

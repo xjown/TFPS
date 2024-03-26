@@ -254,6 +254,7 @@ declare global {
   const OneMinusDstColorFactor: typeof import('three')['OneMinusDstColorFactor']
   const OneMinusSrcAlphaFactor: typeof import('three')['OneMinusSrcAlphaFactor']
   const OneMinusSrcColorFactor: typeof import('three')['OneMinusSrcColorFactor']
+  const OrbitControls: typeof import('three')['OrbitControls']
   const OrthographicCamera: typeof import('three')['OrthographicCamera']
   const P3Primaries: typeof import('three')['P3Primaries']
   const PCFShadowMap: typeof import('three')['PCFShadowMap']
