@@ -4,7 +4,11 @@ import type {
   WebGLRenderer as WebGLRendererType,
   PerspectiveCamera as PerspectiveCameraType,
 } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import {
+  SpatialControls,
+  ControlMode,
+  PointerBehaviour,
+} from 'spatial-controls';
 
 import ProxyObj from './ProxyObj';
 
@@ -14,28 +18,33 @@ export default class Core {
   renderer: WebGLRendererType;
   camera: PerspectiveCameraType;
   private _proxy: ProxyObj;
-  orbit_controls: OrbitControls;
+  spatial_controls: SpatialControls;
 
   private static _instance: Core;
   constructor() {
     this.scene = new Scene();
     this.clock = new Clock();
     this.renderer = new WebGLRenderer();
-    this.camera = new PerspectiveCamera(
-      60,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+    this.camera = new PerspectiveCamera();
+
     this._proxy = new ProxyObj(this);
-    this.orbit_controls = new OrbitControls(
-      this.camera,
+
+    this.spatial_controls = new SpatialControls(
+      this.camera.position,
+      this.camera.quaternion,
       this.renderer.domElement
     );
-    this.orbit_controls.dampingFactor = 0.2;
-    this.orbit_controls.enableDamping = true;
-
-    this.camera.position.set(0, 0, 2);
+    const settings = this.spatial_controls.settings;
+    settings.general.mode = ControlMode.THIRD_PERSON;
+    settings.pointer.behaviour = PointerBehaviour.DEFAULT;
+    settings.rotation.sensitivity = 2.2;
+    settings.rotation.damping = 0.13;
+    settings.rotation.minPolarAngle = Number.NEGATIVE_INFINITY;
+    settings.rotation.maxPolarAngle = Number.POSITIVE_INFINITY;
+    settings.translation.sensitivity = 1;
+    settings.translation.damping = 0.1;
+    settings.zoom.sensitivity = 0.1;
+    settings.zoom.damping = 0.15;
 
     this._init();
   }
@@ -46,6 +55,7 @@ export default class Core {
     window.addEventListener('resize', () => {
       this._RenderRespect();
     });
+
     app.appendChild(this.renderer.domElement);
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this._RenderRespect();
@@ -60,10 +70,16 @@ export default class Core {
   }
 
   private update() {
-    this.renderer.setAnimationLoop(() => {
+    // this.renderer.setAnimationLoop(() => {
+    //   this.renderer.render(this.scene, this.camera);
+    //   this._proxy.update(this.clock.getDelta());
+    //   this.spatial_controls.update(this.clock.getDelta());
+    // });
+    requestAnimationFrame((time) => {
       this.renderer.render(this.scene, this.camera);
       this._proxy.update(this.clock.getDelta());
-      this.orbit_controls.update();
+      this.spatial_controls.update(time);
+      this.update();
     });
   }
 
