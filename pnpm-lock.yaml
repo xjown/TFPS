@@ -5,6 +5,7 @@ specifiers:
   '@types/three': ^0.162.0
   spatial-controls: ^6.1.1
   three: ^0.162.0
+  three-mesh-bvh: ^0.7.3
   typescript: ^5.2.2
   unplugin-auto-import: ^0.17.5
   vite: ^5.2.0
@@ -12,6 +13,7 @@ specifiers:
 dependencies:
   spatial-controls: 6.1.1_three@0.162.0
   three: 0.162.0
+  three-mesh-bvh: 0.7.3_three@0.162.0
 
 devDependencies:
   '@types/node': 20.11.30
@@ -738,6 +740,14 @@ packages:
     dependencies:
       acorn: 8.11.3
     dev: true
+
+  /three-mesh-bvh/0.7.3_three@0.162.0:
+    resolution: {integrity: sha512-3W6KjzmupjfE89GuHPT31kxKWZ4YGZPEZJNysJpiOZfQRsBQQgmK7v/VJPpjG6syhAvTnY+5Fr77EvIkTLpGSw==}
+    peerDependencies:
+      three: '>= 0.151.0'
+    dependencies:
+      three: 0.162.0
+    dev: false
 
   /three/0.162.0:
     resolution: {integrity: sha512-xfCYj4RnlozReCmUd+XQzj6/5OjDNHBy5nT6rVwrOKGENAvpXe2z1jL+DZYaMu4/9pNsjH/4Os/VvS9IrH7IOQ==}

@@ -4,6 +4,7 @@ import { BORDER_TEXTURE } from '@/configs';
 
 export default class World {
   private _instance: Core;
+  isReady: boolean = false;
   constructor(instance: Core) {
     this._instance = instance;
     this._loadScene();
@@ -24,10 +25,10 @@ export default class World {
           item.receiveShadow = true;
         }
       });
-      this._instance.scene.add(scene);
 
-      const light = new AmbientLight(0xff0000); // 柔和的白光
-      this._instance.scene.add(light);
+      this._instance.scene.add(scene);
+      this._instance.collision.addGroup(scene);
+      this.isReady = true;
     } catch (e) {
       console.error('加载模型失败', e);
     }

@@ -6,6 +6,8 @@ import type {
 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Events from './events';
+import Collision from './collision';
+import World from './world';
 
 import ProxyObj from './ProxyObj';
 
@@ -15,9 +17,10 @@ export default class Core {
   renderer: WebGLRendererType;
   camera: PerspectiveCameraType;
   private _proxy: ProxyObj;
-  // spatial_controls: SpatialControls;
   orbit_controls: OrbitControls;
   events: Events;
+  collision: Collision;
+  world: World;
 
   private static _instance: Core;
   constructor() {
@@ -30,28 +33,11 @@ export default class Core {
       this.camera,
       this.renderer.domElement
     );
+    this.collision = new Collision();
     this._proxy = new ProxyObj(this);
+    this.world = new World(this);
 
     this._init();
-
-    // this.spatial_controls = new SpatialControls(
-    //   this.camera.position,
-    //   this.camera.quaternion,
-    //   this.renderer.domElement
-    // );
-    // const settings = this.spatial_controls.settings;
-    // settings.general.mode = ControlMode.THIRD_PERSON;
-    // settings.pointer.behaviour = PointerBehaviour.DEFAULT;
-    // settings.rotation.sensitivity = 2.2;
-    // settings.rotation.damping = 0.13;
-    // settings.rotation.minPolarAngle = Number.NEGATIVE_INFINITY;
-    // settings.rotation.maxPolarAngle = Number.POSITIVE_INFINITY;
-    // settings.translation.enabled = false;
-    // settings.translation.sensitivity = 1;
-    // settings.translation.damping = 0.1;
-    // settings.zoom.enabled = false;
-    // settings.zoom.sensitivity = 0.1;
-    // settings.zoom.damping = 0.15;
   }
 
   private _init() {
@@ -65,6 +51,8 @@ export default class Core {
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this._RenderRespect();
     this.update();
+    this.camera.position.set(0, 0, 1);
+    this.orbit_controls.dampingFactor = 0.2;
   }
 
   private _RenderRespect() {
