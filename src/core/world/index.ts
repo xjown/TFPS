@@ -1,10 +1,12 @@
-import Core from '../index';
+import type Core from '../index';
 import { loadGLTF } from '@/utils';
 import { BORDER_TEXTURE } from '@/configs';
 
+import type { Mesh as MeshType } from 'three';
 export default class World {
   private _instance: Core;
   isReady: boolean = false;
+  gallery_boards: Record<string, MeshType> = {};
   constructor(instance: Core) {
     this._instance = instance;
     this._loadScene();
@@ -23,6 +25,9 @@ export default class World {
         if (item.name === 'home002') {
           item.castShadow = true;
           item.receiveShadow = true;
+        }
+        if (/gallery.*_board/.test(item.name) && 'isMesh' in item) {
+          this.gallery_boards[item.name] = item;
         }
       });
 

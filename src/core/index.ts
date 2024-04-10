@@ -65,7 +65,7 @@ export default class Core {
   private update() {
     requestAnimationFrame((time) => {
       this.renderer.render(this.scene, this.camera);
-      this._proxy.update(this.clock.getDelta());
+      this._proxy.update(Math.min(0.03, this.clock.getDelta()));
       this.orbit_controls.update();
       this.update();
     });
