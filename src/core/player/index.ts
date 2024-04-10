@@ -19,11 +19,12 @@ export default class Player {
   private _frameLine: Line3Type = new Line3();
   private _onFloor: boolean = false;
   private _downDistance: Vector3Type = new Vector3();
-  private _gravity: number = 20;
+  private _gravity: number = 15;
 
   constructor(instance: Core) {
     this._instance = instance;
     this._createPlayer();
+    this._playerJump();
   }
 
   _createPlayer() {
@@ -66,17 +67,19 @@ export default class Player {
       this._player.position.addScaledVector(rotation, this._speed * time);
     }
 
-    // if (this._instance.events.downDowning.Space) {
-    //   if (this._onFloor) {
-    //     this._downDistance.y = 5;
-    //   }
-    // }
-
     //此处必须更新。默认为自动更新，但是会慢一拍。如果不更新会导致计算距离不准确
     // 详情 _checkCollision()方法 => moveStance变量
     this._player.updateMatrixWorld();
   }
 
+  private _playerJump() {
+    this._instance.events.addEventListener('jump', () => {
+      if (this._onFloor) {
+        this._player.position.y += 3;
+        this._onFloor = false;
+      }
+    });
+  }
   private _checkCollision() {
     if (!this._instance.collision?.collisions) return;
     this._frameBox.makeEmpty();
@@ -131,11 +134,9 @@ export default class Player {
     move_distance.normalize().multiplyScalar(offsets);
 
     // move_distance.y 大于零的情况下一定在地面上。
-    // console.log(move_distance.y, Math.abs(this._downDistance.y));
     this._onFloor = move_distance.y > Math.abs(this._downDistance.y);
-    // console.log(this._onFloor);
 
     this._player.position.add(move_distance);
-    // this._player.updateMatrixWorld();
+    this._player.updateMatrixWorld();
   }
 }

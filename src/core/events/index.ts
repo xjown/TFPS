@@ -1,22 +1,16 @@
 export type VisibleModeType = 'pc' | 'mobile';
-export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD' | 'Space';
-export default class Events {
+export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
+export default class Events extends EventDispatcher {
   mode: VisibleModeType = 'pc';
   downDowning: { [key in allowKeyDownType]: boolean } = {
     KeyW: false,
     KeyA: false,
     KeyD: false,
     KeyS: false,
-    Space: false,
   };
-  private _allowKeyDown: allowKeyDownType[] = [
-    'KeyW',
-    'KeyS',
-    'KeyA',
-    'KeyD',
-    'Space',
-  ];
+  private _allowKeyDown: allowKeyDownType[] = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
   constructor() {
+    super();
     this._bindEvent();
   }
 
@@ -40,6 +34,12 @@ export default class Events {
     const { code } = event;
     if (this._allowKeyDown.includes(code)) {
       this.downDowning[code as allowKeyDownType] = true;
+    } else if (code == 'Space') {
+      this._jumpEvent();
     }
+  }
+
+  private _jumpEvent() {
+    this.dispatchEvent({ type: 'jump' });
   }
 }
