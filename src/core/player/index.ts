@@ -21,18 +21,27 @@ export default class Player {
   private _onFloor: boolean = false;
   private _downDistance: Vector3Type = new Vector3();
   private _gravity: number = 15;
+  aa;
+  mixer;
 
   constructor(instance: Core, character: Character) {
     this._instance = instance;
-    this._createPlayer();
+
+    this._createPlayer(character);
     this._playerJump();
   }
 
-  _createPlayer() {
+  _createPlayer(character: Character) {
     this._player = new Mesh(
       new BoxGeometry(1, 1, 1),
       new MeshBasicMaterial({ color: 0x00ff00 })
     );
+
+    this.mixer = new AnimationMixer(character.person);
+    this.aa = this.mixer.clipAction(character.actions['idle']);
+    this.aa.play();
+
+    this._player.visible = false;
     this._player.position.set(0, 1, 0);
     this._instance.scene.add(this._player);
   }
@@ -40,7 +49,7 @@ export default class Player {
   update(time: number) {
     this._updatePlayer(time);
     this._checkCollision();
-
+    this.mixer.update();
     // 调整摄像机
     const cameraDistance = new Vector3().subVectors(
       this._player.position,
