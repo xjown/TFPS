@@ -27,3 +27,8 @@ export const CHARACTER_IDLE_URL = new URL(
   '../assets/animates/Idle_59_k50.fbx',
   import.meta.url
 ).href;
+
+export const CHARACTER_BACKWARD_URL = new URL(
+  '../assets/animates/Backwards_116_k50.fbx',
+  import.meta.url
+).href;

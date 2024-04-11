@@ -41,7 +41,7 @@ export default class Player {
     this.aa = this.mixer.clipAction(character.actions['idle']);
     this.aa.play();
 
-    this._player.visible = false;
+    // this._player.visible = false;
     this._player.position.set(0, 1, 0);
     this._instance.scene.add(this._player);
   }
@@ -49,6 +49,7 @@ export default class Player {
   update(time: number) {
     this._updatePlayer(time);
     this._checkCollision();
+
     this.mixer.update();
     // 调整摄像机
     const cameraDistance = new Vector3().subVectors(

@@ -5,12 +5,15 @@ import {
   CHARACTER_JUMP_URL,
   CHARACTER_RUNNING_URL,
   CHARACTER_IDLE_URL,
+  CHARACTER_BACKWARD_URL,
 } from '@/configs';
 
 import type {
   Mesh as MeshType,
   AnimationClip as AnimationClipType,
 } from 'three';
+
+export type AllowActionType = 'walk' | 'jump' | 'run' | 'idle' | 'backward';
 
 export default class Character {
   private _firstPerson: boolean;
@@ -26,10 +29,14 @@ export default class Character {
     const jump = await loadFBX(CHARACTER_JUMP_URL);
     const run = await loadFBX(CHARACTER_RUNNING_URL);
     const idle = await loadFBX(CHARACTER_IDLE_URL);
+    const backward = await loadFBX(CHARACTER_BACKWARD_URL);
+
     this.actions['walk'] = walk.animations[0];
     this.actions['jump'] = jump.animations[0];
     this.actions['run'] = run.animations[0];
     this.actions['idle'] = idle.animations[0];
+    this.actions['backward'] = idle.animations[0];
+
     model.scale.set(0.02, 0.02, 0.02);
 
     this.person = model;
