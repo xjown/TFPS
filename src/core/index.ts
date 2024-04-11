@@ -8,9 +8,6 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Events from './events';
 import Collision from './collision';
 import World from './world';
-import Character from './character';
-
-import ProxyObj from './ProxyObj';
 
 export default class Core {
   scene: SceneType;
@@ -21,9 +18,6 @@ export default class Core {
   events: Events;
   collision: Collision;
   world: World;
-  character: Character;
-
-  private _proxy: ProxyObj;
 
   private static _instance: Core;
   constructor() {
@@ -37,10 +31,7 @@ export default class Core {
       this.renderer.domElement
     );
     this.collision = new Collision();
-    this._proxy = new ProxyObj(this);
     this.world = new World(this);
-    this.character = new Character();
-
     this._init();
   }
 
@@ -69,7 +60,7 @@ export default class Core {
   private update() {
     requestAnimationFrame((time) => {
       this.renderer.render(this.scene, this.camera);
-      this._proxy.update(Math.min(0.03, this.clock.getDelta()));
+      this.world.update(Math.min(0.03, this.clock.getDelta()));
       this.orbit_controls.update();
       this.update();
     });

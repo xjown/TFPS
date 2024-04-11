@@ -1,4 +1,5 @@
 import type Core from '../index';
+import type Character from '../character';
 import type {
   Box3 as Box3Type,
   Line3 as Line3Type,
@@ -21,7 +22,7 @@ export default class Player {
   private _downDistance: Vector3Type = new Vector3();
   private _gravity: number = 15;
 
-  constructor(instance: Core) {
+  constructor(instance: Core, character: Character) {
     this._instance = instance;
     this._createPlayer();
     this._playerJump();
@@ -32,7 +33,6 @@ export default class Player {
       new BoxGeometry(1, 1, 1),
       new MeshBasicMaterial({ color: 0x00ff00 })
     );
-    this._player.visible = false;
     this._player.position.set(0, 1, 0);
     this._instance.scene.add(this._player);
   }
