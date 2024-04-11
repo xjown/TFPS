@@ -8,6 +8,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Events from './events';
 import Collision from './collision';
 import World from './world';
+import Character from './character';
 
 import ProxyObj from './ProxyObj';
 
@@ -16,11 +17,13 @@ export default class Core {
   clock: ClockType;
   renderer: WebGLRendererType;
   camera: PerspectiveCameraType;
-  private _proxy: ProxyObj;
   orbit_controls: OrbitControls;
   events: Events;
   collision: Collision;
   world: World;
+  character: Character;
+
+  private _proxy: ProxyObj;
 
   private static _instance: Core;
   constructor() {
@@ -36,6 +39,7 @@ export default class Core {
     this.collision = new Collision();
     this._proxy = new ProxyObj(this);
     this.world = new World(this);
+    this.character = new Character();
 
     this._init();
   }

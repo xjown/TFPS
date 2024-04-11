@@ -12,7 +12,7 @@ export default class ProxyObj {
   }
 
   update(time: number) {
-    if (this._instance.world.isReady) {
+    if (this._instance.world.getState()) {
       this._player.update(time);
       /**
        * TODO:直接调用会导致生成的边界值不准确

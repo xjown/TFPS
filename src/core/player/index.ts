@@ -32,6 +32,7 @@ export default class Player {
       new BoxGeometry(1, 1, 1),
       new MeshBasicMaterial({ color: 0x00ff00 })
     );
+    this._player.visible = false;
     this._player.position.set(0, 1, 0);
     this._instance.scene.add(this._player);
   }
