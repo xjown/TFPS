@@ -39,6 +39,15 @@ export default class Player {
   update(time: number) {
     this._updatePlayer(time);
     this._checkCollision();
+
+    // 调整摄像机
+    const cameraDistance = new Vector3().subVectors(
+      this._player.position,
+      this._instance.orbit_controls.target
+    );
+    this._instance.orbit_controls.target.copy(this._player.position);
+    this._instance.camera.position.add(cameraDistance);
+    this._instance.camera.updateMatrix();
   }
 
   private _updatePlayer(time: number) {
