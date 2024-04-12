@@ -34,12 +34,12 @@ export default class Events extends EventDispatcher {
     const { code } = event;
     if (this._allowKeyDown.includes(code)) {
       this.downDowning[code as allowKeyDownType] = true;
-    } else if (code == 'Space') {
-      this._jumpEvent();
+    } else {
+      this._actionEvent(code);
     }
   }
 
-  private _jumpEvent() {
-    this.dispatchEvent({ type: 'jump' });
+  private _actionEvent(code: string) {
+    this.dispatchEvent({ type: 'action', message: { code } });
   }
 }

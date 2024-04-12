@@ -1,4 +1,4 @@
-import { loadGLTF, loadFBX } from '@/utils';
+import { loadFBX } from '@/utils';
 import {
   CHARACTER_URL,
   CHARACTER_WALK_URL,
@@ -35,11 +35,17 @@ export default class Character {
     this.actions['jump'] = jump.animations[0];
     this.actions['run'] = run.animations[0];
     this.actions['idle'] = idle.animations[0];
-    this.actions['backward'] = idle.animations[0];
+    this.actions['backward'] = backward.animations[0];
 
-    model.scale.set(0.02, 0.02, 0.02);
+    model.scale.set(0.04, 0.04, 0.04);
 
     this.person = model;
     return this.person;
+  }
+
+  setPosition() {
+    if (this.person) {
+      this.person.position.addScalar();
+    }
   }
 }
