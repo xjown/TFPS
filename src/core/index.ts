@@ -48,6 +48,8 @@ export default class Core {
     this.update();
     this.camera.position.set(0, 0, 1);
     this.orbit_controls.dampingFactor = 0.2;
+    this.orbit_controls.enableZoom = false;
+    this.orbit_controls.enablePan = false;
   }
 
   private _RenderRespect() {

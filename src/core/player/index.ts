@@ -9,6 +9,7 @@ import type {
   MeshBasicMaterial as MeshBasicMaterialType,
   Vector3 as Vector3Type,
   AnimationMixer as AnimationMixerType,
+  Matrix4 as Matrix4Type,
 } from 'three';
 
 export default class Player {
@@ -28,6 +29,7 @@ export default class Player {
   private _character: Character;
   private _currentAction: AllowActionType = 'idle';
   private _maxFalling: number = 15;
+  private _originCamera!: Matrix4Type;
 
   constructor(instance: Core, character: Character) {
     this._instance = instance;
@@ -46,7 +48,7 @@ export default class Player {
 
     this._mixer = new AnimationMixer(this._character.person);
     this._mixer.clipAction(this._character.actions['idle']).play();
-
+    this._switchVisual();
     this._player.visible = false;
     this._player.position.set(0, 4, 0);
     this._instance.scene.add(this._player);
@@ -110,6 +112,35 @@ export default class Player {
     this._player.updateMatrixWorld();
   }
 
+  private _switchVisual() {
+    if (!this._basePlayerInfo.firstPerson) {
+      this._character.person.visible = true;
+      this._originCamera = this._instance.camera.matrix.clone();
+      this._instance.camera.position
+        .sub(this._instance.orbit_controls.target)
+        .normalize()
+        .multiplyScalar(10)
+        .add(this._instance.orbit_controls.target);
+      this._instance.orbit_controls.maxPolarAngle = Math.PI / 2;
+      this._instance.orbit_controls.minDistance = 1;
+      this._instance.orbit_controls.maxDistance = 20;
+    } else {
+      this._instance.camera.position
+        .sub(this._instance.orbit_controls.target)
+        .normalize();
+      this._instance.camera.position.x /= 10;
+      this._instance.camera.position.y /= 10;
+      this._instance.camera.position.z /= 10;
+
+      this._instance.camera.position.add(this._instance.orbit_controls.target);
+      this._character.person.visible = false;
+      this._instance.orbit_controls.maxPolarAngle = Math.PI;
+      this._instance.orbit_controls.minDistance = 1e-4;
+      this._instance.orbit_controls.maxDistance = 1e-4;
+    }
+    this._basePlayerInfo.firstPerson = !this._basePlayerInfo.firstPerson;
+  }
+
   private _playerOtherAction() {
     this._instance.events.addEventListener('action', ({ message }) => {
       const { code } = message;
@@ -121,17 +152,7 @@ export default class Player {
           }
           break;
         case 'KeyV':
-          if (this._basePlayerInfo.firstPerson) {
-            this._character.person.visible = true;
-            this._instance.camera.position
-              .sub(this._instance.orbit_controls.target)
-              .normalize()
-              .multiplyScalar(10)
-              .add(this._instance.orbit_controls.target);
-          } else {
-            this._character.person.visible = false;
-          }
-          this._basePlayerInfo.firstPerson = !this._basePlayerInfo.firstPerson;
+          this._switchVisual();
           break;
       }
     });
