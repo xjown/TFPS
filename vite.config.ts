@@ -12,7 +12,7 @@ for (let i in Three) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: './',
+  base: '/pavilion/',
   resolve: {
     alias: {
       '~': resolve(__dirname, './'),
