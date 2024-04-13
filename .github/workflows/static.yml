@@ -1,47 +1,27 @@
-# Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
-
+name: CI Github Pages
 on:
-  # Runs on pushes targeting the default branch
+  #监听push操作
   push:
-    branches: ['main']
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
-# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
-concurrency:
-  group: 'pages'
-  cancel-in-progress: false
-
+    branches:
+      - main # 这里只配置了main分支，所以只有推送main分支才会触发以下任务
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  # 任务ID
+  build-and-deploy:
+    # 运行环境
     runs-on: ubuntu-latest
+    # 步骤
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      # 官方action，将代码拉取到虚拟机
+      - name: Checkout  ️
+        uses: actions/checkout@v3
+
       - name: Install and Build # 安装依赖、打包，如果提前已打包好无需这一步
         run: |
           npm install
           npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+
+      - name: Deploy # 部署
+        uses: JamesIves/github-pages-deploy-action@v4.3.3
         with:
-          # Upload entire repository
-          path: '.'
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          branch: gh-pages # 部署后提交到那个分支
+          folder: dist # 这里填打包好的目录名称
