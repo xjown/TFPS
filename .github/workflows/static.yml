@@ -1,67 +1,51 @@
-# .github/workflows/auto-deploy.yml
-
-name: auto deploy 🚀
+# 将静态内容部署到 GitHub Pages 的简易工作流程
+name: Deploy static content to Pages
 
 on:
-  # 监听push操作
+  # 仅在推送到默认分支时运行。
   push:
-    branches:
-      - main # 这里只配置了main分支，所以只有推送main分支才会触发以下任务
-  pull_request:
+    branches: ['main']
 
   # 这个选项可以使你手动在 Action tab 页面触发工作流
-  # workflow_dispatch:
+  workflow_dispatch:
 
+# 设置 GITHUB_TOKEN 的权限，以允许部署到 GitHub Pages。
 permissions:
-  # 允许对仓库的内容进行写操作。包括创建、修改和删除文件、目录以及提交更改等
-  # 这里只配置了push，所以只有推送main分支才会触发以下任务
-  contents: write
-  # 允许管理 GitHub Pages 服务并对其进行写操作
+  contents: read
   pages: write
+  id-token: write
+
+# 允许一个并发的部署
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
 
 jobs:
-  # 任务ID
-  build-and-deploy:
-    # 运行环境
-    # runs-on: macos-latest
-    # runs-on: windows-latest
+  # 单次部署的工作描述
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}
-
-    # 步骤
     steps:
-      # 官方action，将代码拉取到虚拟机
       - name: Checkout
-        uses: actions/checkout@v3
-
-      # 建一个名为setup-node的步骤（安装指定版本的Node.js）
-      - name: setup-node
-        # 使用setup-node@v3这个action
-        uses: actions/setup-node@v3
-        # 指定某个action 可能需要输入的参数
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
-          node-version: '17.x'
-
-      # 安装 pnpm
-      - name: Install pnpm
-        run: npm install pnpm -g
-
-      # 安装依赖
+          node-version: 20
+          cache: 'npm'
       - name: Install dependencies
-        run: pnpm i
-      # 打包
-      - name: Build application 🔧
-        run: pnpm run build:prod
-
-      # 部署 https://github.com/JamesIves/github-pages-deploy-action
-      - name: Deploy 🚀
-        uses: actions/checkout@v3
-        if: github.ref == 'refs/heads/main'
+        run: npm ci
+      - name: Build
+        run: npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages # default: gh-pages
-          folder: dist
-          clean: true # Automatically remove deleted files from the deploy branch
-          # commit-message: ${{ github.event.head_commit.message }} # default: `Deploying to gh-pages from @ 3238feb 🚀`
-          # commit-message: "deploy: ${{ github.sha }} (${{ github.event.head_commit.message }}) 🚀 "
+          # Upload dist folder
+          path: './dist'
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
