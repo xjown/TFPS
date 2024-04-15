@@ -1,45 +1,32 @@
-export type VisibleModeType = 'pc' | 'mobile';
-export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
-export default class Events extends EventDispatcher {
-  mode: VisibleModeType = 'pc';
-  downDowning: { [key in allowKeyDownType]: boolean } = {
-    KeyW: false,
-    KeyA: false,
-    KeyD: false,
-    KeyS: false,
-  };
-  private _allowKeyDown: allowKeyDownType[] = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
-  constructor() {
-    super();
-    this._bindEvent();
+import type { EventDispatcher } from 'three';
+import ActionEvent from './action';
+import UIEvents from './ui';
+export default class Events {
+  private static _instance: Events;
+  private _events: { [key: string]: EventDispatcher } = {};
+
+  public static getStance(): Events {
+    if (Events._instance) {
+      return Events._instance;
+    } else {
+      Events._instance = new Events();
+    }
+    return Events._instance;
   }
 
-  private _bindEvent() {
-    if ('ontouchstart' in window) {
-      this.mode = 'mobile';
-      // ....
-    } else {
-      this.mode = 'pc';
-      window.addEventListener('keydown', this._keydown.bind(this));
-      window.addEventListener('keyup', this._keyup.bind(this));
-    }
-  }
-  private _keyup(event: KeyboardEvent) {
-    const { code } = event;
-    if (this._allowKeyDown.includes(code)) {
-      this.downDowning[code as allowKeyDownType] = false;
-    }
-  }
-  private _keydown(event: KeyboardEvent) {
-    const { code } = event;
-    if (this._allowKeyDown.includes(code)) {
-      this.downDowning[code as allowKeyDownType] = true;
-    } else {
-      this._actionEvent(code);
-    }
+  init() {
+    this._registerEvents(new ActionEvent());
+    this._registerEvents(new UIEvents());
   }
 
-  private _actionEvent(code: string) {
-    this.dispatchEvent({ type: 'action', message: { code } });
+  private _registerEvents(event: EventDispatcher) {
+    if (this._events[event.constructor.name]) {
+      return;
+    }
+    this._events[event.constructor.name] = event;
+  }
+
+  getEvent(name: string) {
+    return this._events[name];
   }
 }

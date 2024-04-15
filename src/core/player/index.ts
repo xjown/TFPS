@@ -1,3 +1,5 @@
+import Events from '../events';
+
 import type Core from '../index';
 import type Character from '../character';
 import type { AllowActionType } from '../character';
@@ -29,7 +31,7 @@ export default class Player {
   private _character: Character;
   private _currentAction: AllowActionType = 'idle';
   private _maxFalling: number = 15;
-  private _originCamera!: Matrix4Type;
+  private _event: Events = Events.getStance().getEvent('ActionEvent');
 
   constructor(instance: Core, character: Character) {
     this._instance = instance;
@@ -87,22 +89,23 @@ export default class Player {
     this._downDistance.y = this._onFloor ? 0 : this._gravity * time * -1;
 
     this._player.position.add(this._downDistance);
-    if (this._instance.events.downDowning.KeyW) {
+
+    if (this._event.downDowning.KeyW) {
       rotation.set(0, 0, -1).applyAxisAngle(new Vector3(0, 1, 0), angle);
       this._player.position.addScaledVector(rotation, this._speed * time);
     }
 
-    if (this._instance.events.downDowning.KeyS) {
+    if (this._event.downDowning.KeyS) {
       rotation.set(0, 0, 1).applyAxisAngle(new Vector3(0, 1, 0), angle);
       this._player.position.addScaledVector(rotation, this._speed * time);
     }
 
-    if (this._instance.events.downDowning.KeyA) {
+    if (this._event.downDowning.KeyA) {
       rotation.set(-1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle);
       this._player.position.addScaledVector(rotation, this._speed * time);
     }
 
-    if (this._instance.events.downDowning.KeyD) {
+    if (this._event.downDowning.KeyD) {
       rotation.set(1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle);
       this._player.position.addScaledVector(rotation, this._speed * time);
     }
@@ -115,7 +118,6 @@ export default class Player {
   private _switchVisual() {
     if (!this._basePlayerInfo.firstPerson) {
       this._character.person.visible = true;
-      this._originCamera = this._instance.camera.matrix.clone();
       this._instance.camera.position
         .sub(this._instance.orbit_controls.target)
         .normalize()
@@ -142,7 +144,7 @@ export default class Player {
   }
 
   private _playerOtherAction() {
-    this._instance.events.addEventListener('action', ({ message }) => {
+    this._event.addEventListener('action', ({ message }) => {
       const { code } = message;
       switch (code) {
         case 'Space':
@@ -229,16 +231,16 @@ export default class Player {
     let nextAction!: AllowActionType;
 
     if (
-      this._instance.events.downDowning.KeyW ||
-      this._instance.events.downDowning.KeyA ||
-      this._instance.events.downDowning.KeyD
+      this._event.downDowning.KeyW ||
+      this._event.downDowning.KeyA ||
+      this._event.downDowning.KeyD
     ) {
-      if (this._instance.events.downDowning.KeyW) angle = Math.PI;
-      if (this._instance.events.downDowning.KeyA) angle = (Math.PI / 2) * -1;
-      if (this._instance.events.downDowning.KeyD) angle = Math.PI / 2;
+      if (this._event.downDowning.KeyW) angle = Math.PI;
+      if (this._event.downDowning.KeyA) angle = (Math.PI / 2) * -1;
+      if (this._event.downDowning.KeyD) angle = Math.PI / 2;
 
       nextAction = 'walk';
-    } else if (this._instance.events.downDowning.KeyS) {
+    } else if (this._event.downDowning.KeyS) {
       nextAction = 'backward';
     } else if (this._onFloor) {
       nextAction = 'idle';

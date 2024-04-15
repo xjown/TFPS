@@ -8,6 +8,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Events from './events';
 import Collision from './collision';
 import World from './world';
+import Ui from './ui';
 
 export default class Core {
   scene: SceneType;
@@ -15,9 +16,9 @@ export default class Core {
   renderer: WebGLRendererType;
   camera: PerspectiveCameraType;
   orbit_controls: OrbitControls;
-  events: Events;
   collision: Collision;
   world: World;
+  ui: Ui;
 
   private static _instance: Core;
   constructor() {
@@ -25,13 +26,15 @@ export default class Core {
     this.clock = new Clock();
     this.renderer = new WebGLRenderer();
     this.camera = new PerspectiveCamera();
-    this.events = new Events();
     this.orbit_controls = new OrbitControls(
       this.camera,
       this.renderer.domElement
     );
+    Events.getStance().init();
     this.collision = new Collision();
     this.world = new World(this);
+    this.ui = new Ui();
+
     this._init();
   }
 

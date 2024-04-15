@@ -1,4 +1,4 @@
-import { loadFBX, loadGLTF } from '@/utils';
+import type Loader from '../loader';
 import {
   CHARACTER_URL,
   CHARACTER_WALK_URL,
@@ -23,13 +23,13 @@ export default class Character {
     this._firstPerson = firstPerson;
   }
 
-  async load() {
-    const model = await loadFBX(CHARACTER_URL);
-    const walk = await loadFBX(CHARACTER_WALK_URL);
-    const jump = await loadFBX(CHARACTER_JUMP_URL);
-    const run = await loadFBX(CHARACTER_RUNNING_URL);
-    const idle = await loadFBX(CHARACTER_IDLE_URL);
-    const backward = await loadFBX(CHARACTER_BACKWARD_URL);
+  async load(handle: Loader) {
+    const model = await handle.loadFBX(CHARACTER_URL);
+    const walk = await handle.loadFBX(CHARACTER_WALK_URL);
+    const jump = await handle.loadFBX(CHARACTER_JUMP_URL);
+    const run = await handle.loadFBX(CHARACTER_RUNNING_URL);
+    const idle = await handle.loadFBX(CHARACTER_IDLE_URL);
+    const backward = await handle.loadFBX(CHARACTER_BACKWARD_URL);
 
     this.actions['walk'] = walk.animations[0];
     this.actions['jump'] = jump.animations[0];

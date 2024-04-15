@@ -1,7 +1,7 @@
-import { loadGLTF } from '@/utils';
 import { BORDER_TEXTURE } from '@/configs';
 import Character from '../character';
 import Player from '../player';
+import Loader from '../loader';
 
 import type Core from '../index';
 import type { Mesh as MeshType } from 'three';
@@ -12,17 +12,19 @@ export default class World {
   private _num: number = 1;
   private _character: Character;
   private _player!: Player;
+  private _loader: Loader;
 
   constructor(instance: Core) {
     this._instance = instance;
     this._character = new Character();
+    this._loader = new Loader();
     this._init();
   }
 
   private async _init() {
     try {
       const scene = await this._loadScene();
-      const model = await this._character.load();
+      const model = await this._character.load(this._loader);
       this._instance.scene.add(model);
       this._instance.scene.add(scene);
       this._updateCharacterState();
@@ -37,7 +39,7 @@ export default class World {
   }
 
   private async _loadScene() {
-    const { scene } = await loadGLTF(BORDER_TEXTURE);
+    const { scene } = await this._loader.loadGLTF(BORDER_TEXTURE);
     scene.traverse((item) => {
       if (item.name === 'home001' || item.name === 'PointLight') {
         item.castShadow = true;

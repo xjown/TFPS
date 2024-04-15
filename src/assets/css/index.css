@@ -1,0 +1,33 @@
+#loading {
+  position: fixed;
+}
+
+#loading-text {
+  margin-top: 20px;
+}
+
+#loading-text p {
+  margin: 0;
+  padding: 0;
+}
+
+@property --progress {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 0%;
+}
+
+.g-progress {
+  margin: auto;
+  width: 240px;
+  height: 5px;
+  border-radius: 25px;
+  background: linear-gradient(
+    90deg,
+    #fff,
+    rgb(181, 233, 233) var(--progress),
+    transparent 0
+  );
+  border: 1px solid #eee;
+  transition: 0.3s --progress;
+}
