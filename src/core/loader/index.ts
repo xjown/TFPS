@@ -37,7 +37,6 @@ export default class Loader {
 
   private _loadOnprogress() {
     const that: Loader = this;
-    console.log(this._event);
     this._manager.onProgress = function (url, itemsLoaded, itemsTotal) {
       that._event.dispatchEvent({
         type: 'load',

@@ -15,15 +15,15 @@ export default class Events {
   }
 
   init() {
-    this._registerEvents(new ActionEvent());
-    this._registerEvents(new UIEvents());
+    this._registerEvents(new ActionEvent(), 'ActionEvent');
+    this._registerEvents(new UIEvents(), 'UIEvents');
   }
 
-  private _registerEvents(event: EventDispatcher) {
-    if (this._events[event.constructor.name]) {
+  private _registerEvents(event: EventDispatcher, name: string) {
+    if (this._events[name]) {
       return;
     }
-    this._events[event.constructor.name] = event;
+    this._events[name] = event;
   }
 
   getEvent(name: string) {
