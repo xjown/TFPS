@@ -5,6 +5,7 @@ import type UIEvents from '../events/ui';
 export default class UI {
   private _event: UIEvents = Events.getStance().getEvent('UIEvents');
   constructor() {
+    this._event && Events.getStance().init();
     this._manageLoad();
   }
 
@@ -13,7 +14,6 @@ export default class UI {
     const loadingText: HTMLElement = document.getElementById('loading-text')!;
     loadingText.innerHTML = `<div class="g-progress" id="g-progress" style="--progress: 0%"></div>`;
     const progress: HTMLElement = document.getElementById('g-progress')!;
-    console.log(progress);
     this._event.addEventListener('load', ({ message }) => {
       const { url, itemsLoaded, itemsTotal } = message;
       if (itemsLoaded / itemsTotal >= 1) {
