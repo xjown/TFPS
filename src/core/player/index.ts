@@ -3,6 +3,7 @@ import Events from '../events';
 import type Core from '../index';
 import type Character from '../character';
 import type { AllowActionType } from '../character';
+import type ActionEvent from '../events/action';
 import type {
   Box3 as Box3Type,
   Line3 as Line3Type,
@@ -11,7 +12,6 @@ import type {
   MeshBasicMaterial as MeshBasicMaterialType,
   Vector3 as Vector3Type,
   AnimationMixer as AnimationMixerType,
-  Matrix4 as Matrix4Type,
 } from 'three';
 
 export default class Player {
@@ -31,7 +31,7 @@ export default class Player {
   private _character: Character;
   private _currentAction: AllowActionType = 'idle';
   private _maxFalling: number = 15;
-  private _event: Events = Events.getStance().getEvent('ActionEvent');
+  private _event: ActionEvent = Events.getStance().getEvent('ActionEvent');
 
   constructor(instance: Core, character: Character) {
     this._instance = instance;

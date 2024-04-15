@@ -8,7 +8,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import Events from './events';
 import Collision from './collision';
 import World from './world';
-import Ui from './ui';
+import UI from './ui';
 
 export default class Core {
   scene: SceneType;
@@ -18,7 +18,7 @@ export default class Core {
   orbit_controls: OrbitControls;
   collision: Collision;
   world: World;
-  ui: Ui;
+  ui: UI;
 
   private static _instance: Core;
   constructor() {
@@ -33,7 +33,7 @@ export default class Core {
     Events.getStance().init();
     this.collision = new Collision();
     this.world = new World(this);
-    this.ui = new Ui();
+    this.ui = new UI();
 
     this._init();
   }

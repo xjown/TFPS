@@ -1,10 +1,13 @@
+import Events from '../events';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
 import type { LoadingManager as LoadingManagerType } from 'three';
+import type UIEvent from '../events/ui';
 
 export default class Loader {
   private _manager: LoadingManagerType;
+  private _event: UIEvent = Events.getStance().getEvent('UIEvents');
   constructor() {
     this._manager = new LoadingManager();
     this._loadOnprogress();
@@ -33,11 +36,12 @@ export default class Loader {
   }
 
   private _loadOnprogress() {
+    const that: Loader = this;
     this._manager.onProgress = function (url, itemsLoaded, itemsTotal) {
-      console.log(`进度:${url}${(itemsLoaded / itemsTotal) * 100}%`);
+      that._event.dispatchEvent({
+        type: 'load',
+        message: { url, itemsLoaded, itemsTotal },
+      });
     };
-    // this._manager.onStart = function (url, itemsLoaded, itemsTotal) {
-    //   console.log(`开始加载: ${url}`);
-    // };
   }
 }
