@@ -5,7 +5,6 @@ import type UIEvents from '../events/ui';
 export default class UI {
   private _event: UIEvents = Events.getStance().getEvent('UIEvents');
   constructor() {
-    this._event && Events.getStance().init();
     this._manageLoad();
   }
 
