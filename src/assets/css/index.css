@@ -41,3 +41,30 @@
   left: 50%;
   transform: translateX(-50%);
 }
+.jump-control {
+  z-index: 9999;
+  position: absolute;
+  bottom: 35px;
+  width: 60px;
+  height: 60px;
+  left: 50%;
+  transform: translate(190%, -20%);
+  border-radius: 100%;
+  cursor: pointer;
+}
+.change-control {
+  z-index: 9999;
+  position: absolute;
+  bottom: 35px;
+  width: 60px;
+  height: 60px;
+  left: 50%;
+  transform: translate(-295%, -20%);
+  border-radius: 100%;
+  cursor: pointer;
+}
+.change-control > img,
+.jump-control:img {
+  height: 100%;
+  width: 100%;
+}

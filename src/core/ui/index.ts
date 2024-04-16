@@ -6,6 +6,8 @@ import {
   LOAD_PROCESS,
   ACTION_EVENT_NAME,
 } from '@/configs';
+import changeImage from '@/assets/images/change.png';
+import jumpImage from '@/assets/images/jump.png';
 
 import type UIEvents from '../events/ui';
 import type ActionEvent from '../events/action';
@@ -24,6 +26,8 @@ export default class UI {
   _loadingOff() {
     this._event.addEventListener(STATIC_LOADED, () => {
       const controlHandle = this._createControl();
+      this._createAction();
+
       this._actionEvent.bindEvent(controlHandle);
       this._loadingHandle.style.display = 'none';
     });
@@ -50,10 +54,27 @@ export default class UI {
     });
   }
 
-  _createControl() {
+  private _createControl() {
     const control = document.createElement('div');
     control.setAttribute('class', 'position-control');
     document.body.appendChild(control);
     return control;
+  }
+
+  private _createAction() {
+    const control = document.createElement('div');
+    const change = document.createElement('div');
+    control.setAttribute('class', 'jump-control');
+    control.innerHTML = `<img src="${jumpImage}" height="100%" width="100%"/>`;
+    change.innerHTML = `<img src="${changeImage}" height="100%" width="100%"/>`;
+    document.body.appendChild(control);
+    change.setAttribute('class', 'change-control');
+    document.body.appendChild(change);
+    control.onclick = () => {
+      this._actionEvent.actionEvent('Space');
+    };
+    change.onclick = () => {
+      this._actionEvent.actionEvent('KeyV');
+    };
   }
 }

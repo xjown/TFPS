@@ -53,7 +53,6 @@ export default class ActionEvent extends EventDispatcher {
           this._resetKey();
           this.downDowning['KeyS'] = true;
         }
-        // this.dispatchEvent({ type: UI_POSITION_CONTROL, message: data });
       })
       .on('end', () => {
         this._resetKey();
@@ -77,11 +76,11 @@ export default class ActionEvent extends EventDispatcher {
     if (this._allowKeyDown.includes(code)) {
       this.downDowning[code as allowKeyDownType] = true;
     } else {
-      this._actionEvent(code);
+      this.actionEvent(code);
     }
   }
 
-  private _actionEvent(code: string) {
+  actionEvent(code: string) {
     this.dispatchEvent({ type: KEY_CODE, message: { code } });
   }
 }
