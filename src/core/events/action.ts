@@ -1,4 +1,5 @@
-import { KEY_CODE } from '@/configs';
+import { KEY_CODE, UI_POSITION_CONTROL } from '@/configs';
+import nipplejs from 'nipplejs';
 
 export type VisibleModeType = 'pc' | 'mobile';
 export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
@@ -11,21 +12,59 @@ export default class ActionEvent extends EventDispatcher {
     KeyD: false,
     KeyS: false,
   };
-  private _allowKeyDown: allowKeyDownType[] = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
+  private _allowKeyDown: string[] = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
   constructor() {
     super();
-    this._bindEvent();
   }
 
-  private _bindEvent() {
+  bindEvent(controlHandle: HTMLElement) {
     if ('ontouchstart' in window) {
       this.mode = 'mobile';
-      // ....
     } else {
       this.mode = 'pc';
       window.addEventListener('keydown', this._keydown.bind(this));
       window.addEventListener('keyup', this._keyup.bind(this));
     }
+    this._initControl(controlHandle);
+  }
+
+  private _initControl(controlHandle: HTMLElement) {
+    const control = nipplejs.create({
+      zone: controlHandle,
+      mode: 'static',
+      position: { left: '50%', top: '50%' },
+    });
+    control
+      .on('move', (res, data) => {
+        const { direction, angle } = data;
+        if (!angle) return;
+
+        const { degree } = angle;
+        if (degree >= 330 || degree <= 60) {
+          this._resetKey();
+          this.downDowning['KeyD'] = true;
+        } else if (degree >= 60 && degree <= 150) {
+          this._resetKey();
+          this.downDowning['KeyW'] = true;
+        } else if (degree >= 150 && degree <= 240) {
+          this._resetKey();
+          this.downDowning['KeyA'] = true;
+        } else if (degree >= 240 && degree <= 330) {
+          this._resetKey();
+          this.downDowning['KeyS'] = true;
+        }
+        // this.dispatchEvent({ type: UI_POSITION_CONTROL, message: data });
+      })
+      .on('end', () => {
+        this._resetKey();
+      });
+  }
+
+  private _resetKey() {
+    this.downDowning['KeyD'] = false;
+    this.downDowning['KeyA'] = false;
+    this.downDowning['KeyW'] = false;
+    this.downDowning['KeyS'] = false;
   }
   private _keyup(event: KeyboardEvent) {
     const { code } = event;

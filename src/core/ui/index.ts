@@ -1,13 +1,21 @@
 import '@/assets/css/index.css';
 import Events from '../events';
-import { UI_EVENT_NAME, STATIC_LOADED, LOAD_PROCESS } from '@/configs';
+import {
+  UI_EVENT_NAME,
+  STATIC_LOADED,
+  LOAD_PROCESS,
+  ACTION_EVENT_NAME,
+} from '@/configs';
 
 import type UIEvents from '../events/ui';
+import type ActionEvent from '../events/action';
 export default class UI {
   private _event: UIEvents;
+  private _actionEvent: ActionEvent;
   private _loadingHandle: HTMLElement;
   constructor() {
     this._event = Events.getStance().getEvent(UI_EVENT_NAME);
+    this._actionEvent = Events.getStance().getEvent(ACTION_EVENT_NAME);
     this._loadingHandle = document.getElementById('loading')!;
     this._manageLoad();
     this._loadingOff();
@@ -15,7 +23,8 @@ export default class UI {
 
   _loadingOff() {
     this._event.addEventListener(STATIC_LOADED, () => {
-      this._createControl();
+      const controlHandle = this._createControl();
+      this._actionEvent.bindEvent(controlHandle);
       this._loadingHandle.style.display = 'none';
     });
   }
@@ -45,6 +54,6 @@ export default class UI {
     const control = document.createElement('div');
     control.setAttribute('class', 'position-control');
     document.body.appendChild(control);
-    this._event.bindPositionControl(control);
+    return control;
   }
 }

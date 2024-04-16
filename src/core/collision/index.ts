@@ -18,12 +18,7 @@ export default class Collision {
 
     geometry.attributes = ['position'];
     const collision = geometry.generate();
-    collision.boundsTree = new MeshBVH(collision, {
-      onProgress: (progress) => {
-        if (progress == 1) {
-        }
-      },
-    });
+    collision.boundsTree = new MeshBVH(collision);
 
     this.collisions = new Mesh(collision);
     this.collisionsHelper = new MeshBVHHelper(this.collisions, 10);
