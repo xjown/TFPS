@@ -1,13 +1,14 @@
 import Events from '../events';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { UI_EVENT_NAME } from '@/configs';
 
 import type { LoadingManager as LoadingManagerType } from 'three';
 import type UIEvent from '../events/ui';
 
 export default class Loader {
   private _manager: LoadingManagerType;
-  private _event: UIEvent = Events.getStance().getEvent('UIEvents');
+  private _event: UIEvent = Events.getStance().getEvent(UI_EVENT_NAME);
   constructor() {
     this._manager = new LoadingManager();
     this._loadOnprogress();

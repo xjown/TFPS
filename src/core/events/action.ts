@@ -1,5 +1,6 @@
 export type VisibleModeType = 'pc' | 'mobile';
 export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
+
 export default class ActionEvent extends EventDispatcher {
   mode: VisibleModeType = 'pc';
   downDowning: { [key in allowKeyDownType]: boolean } = {

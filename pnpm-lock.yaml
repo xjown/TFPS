@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@types/node': ^20.11.30
   '@types/three': ^0.162.0
+  nipplejs: ^0.10.2
   spatial-controls: ^6.1.1
   three: ^0.162.0
   three-mesh-bvh: ^0.7.3
@@ -11,6 +12,7 @@ specifiers:
   vite: ^5.2.0
 
 dependencies:
+  nipplejs: 0.10.2
   spatial-controls: 6.1.1_three@0.162.0
   three: 0.162.0
   three-mesh-bvh: 0.7.3_three@0.162.0
@@ -636,6 +638,10 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
     dev: true
+
+  /nipplejs/0.10.2:
+    resolution: {integrity: sha512-XGxFY8C2DOtobf1fK+MXINTzkkXJLjZDDpfQhOUZf4TSytbc9s4bmA0lB9eKKM8iDivdr9NQkO7DpIQfsST+9g==}
+    dev: false
 
   /normalize-path/3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}

@@ -31,3 +31,13 @@
   border: 1px solid #eee;
   transition: 0.3s --progress;
 }
+
+.position-control {
+  z-index: 9999;
+  position: absolute;
+  bottom: 35px;
+  width: 80px;
+  height: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+}

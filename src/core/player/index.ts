@@ -1,4 +1,9 @@
 import Events from '../events';
+import {
+  UI_POSITION_CONTROL,
+  ACTION_EVENT_NAME,
+  UI_EVENT_NAME,
+} from '@/configs';
 
 import type Core from '../index';
 import type Character from '../character';
@@ -31,7 +36,9 @@ export default class Player {
   private _character: Character;
   private _currentAction: AllowActionType = 'idle';
   private _maxFalling: number = 15;
-  private _event: ActionEvent = Events.getStance().getEvent('ActionEvent');
+  private _event: ActionEvent = Events.getStance().getEvent(ACTION_EVENT_NAME);
+  private _ui: ActionEvent = Events.getStance().getEvent(UI_EVENT_NAME);
+  private _controlAngle: number = 0;
 
   constructor(instance: Core, character: Character) {
     this._instance = instance;
@@ -54,6 +61,10 @@ export default class Player {
     this._player.visible = false;
     this._player.position.set(0, 4, 0);
     this._instance.scene.add(this._player);
+
+    this._ui.addEventListener(UI_POSITION_CONTROL, ({ message }) => {
+      this._controlAngle = message.angle.radian;
+    });
   }
 
   update(time: number) {
