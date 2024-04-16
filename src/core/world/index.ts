@@ -30,8 +30,8 @@ export default class World {
       this._instance.scene.add(model);
       this._instance.scene.add(scene);
       this._updateCharacterState();
-      this._event.dispatchEvent({ type: STATIC_LOADED });
       this._isReady = true;
+      this._event.dispatchEvent({ type: STATIC_LOADED });
     } catch (e) {
       console.error('加载失败 ', e);
     }

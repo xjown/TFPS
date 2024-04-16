@@ -37,14 +37,16 @@ export default class Loader {
 
   private _loadOnprogress() {
     const that: Loader = this;
-    let loadName: string = '';
-    DefaultLoadingManager.onStart = (url, loaded: number, total: number) => {
-      loadName = url;
+    DefaultLoadingManager.onStart = (url, itemsLoaded, itemsTotal) => {
+      that._event.dispatchEvent({
+        type: LOAD_PROCESS,
+        message: { url, itemsLoaded, itemsTotal },
+      });
     };
     DefaultLoadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
       that._event.dispatchEvent({
         type: LOAD_PROCESS,
-        message: { url: loadName, itemsLoaded, itemsTotal },
+        message: { url, itemsLoaded, itemsTotal },
       });
     };
   }
