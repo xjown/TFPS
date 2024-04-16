@@ -1,6 +1,6 @@
 import '@/assets/css/index.css';
 import Events from '../events';
-import { UI_EVENT_NAME } from '@/configs';
+import { UI_EVENT_NAME, STATIC_LOADED } from '@/configs';
 
 import type UIEvents from '../events/ui';
 export default class UI {
@@ -15,7 +15,7 @@ export default class UI {
     loadingText.innerHTML = `<div class="g-progress" id="g-progress" style="--progress: 0%"></div>`;
     const progress: HTMLElement = document.getElementById('g-progress')!;
     const that = this;
-    this._event.addEventListener('load', ({ message }) => {
+    this._event.addEventListener(STATIC_LOADED, ({ message }) => {
       const { url, itemsLoaded, itemsTotal } = message;
       if (itemsLoaded / itemsTotal >= 1) {
         loading.style.display = 'none';

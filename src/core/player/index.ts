@@ -3,6 +3,7 @@ import {
   UI_POSITION_CONTROL,
   ACTION_EVENT_NAME,
   UI_EVENT_NAME,
+  KEY_CODE,
 } from '@/configs';
 
 import type Core from '../index';
@@ -155,7 +156,7 @@ export default class Player {
   }
 
   private _playerOtherAction() {
-    this._event.addEventListener('action', ({ message }) => {
+    this._event.addEventListener(KEY_CODE, ({ message }) => {
       const { code } = message;
       switch (code) {
         case 'Space':

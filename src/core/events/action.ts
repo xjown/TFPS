@@ -1,3 +1,5 @@
+import { KEY_CODE } from '@/configs';
+
 export type VisibleModeType = 'pc' | 'mobile';
 export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
 
@@ -41,6 +43,6 @@ export default class ActionEvent extends EventDispatcher {
   }
 
   private _actionEvent(code: string) {
-    this.dispatchEvent({ type: 'action', message: { code } });
+    this.dispatchEvent({ type: KEY_CODE, message: { code } });
   }
 }

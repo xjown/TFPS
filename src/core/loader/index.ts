@@ -1,23 +1,23 @@
 import Events from '../events';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { UI_EVENT_NAME } from '@/configs';
+import { UI_EVENT_NAME, STATIC_LOADED } from '@/configs';
 
-import type { LoadingManager as LoadingManagerType } from 'three';
 import type UIEvent from '../events/ui';
 
 export default class Loader {
-  private _manager: LoadingManagerType;
   private _event: UIEvent = Events.getStance().getEvent(UI_EVENT_NAME);
+  private _gltfHandle: GLTFLoader;
+  private _fbxhandle: FBXLoader;
   constructor() {
-    this._manager = new LoadingManager();
     this._loadOnprogress();
+    this._fbxhandle = new FBXLoader();
+    this._gltfHandle = new GLTFLoader();
   }
 
   async loadGLTF(url: string) {
     return new Promise((resolve, reject) => {
-      const loader = new GLTFLoader(this._manager);
-      loader.load(url, (res) => {
+      this._gltfHandle.load(url, (res) => {
         resolve(res);
       });
     });
@@ -25,8 +25,7 @@ export default class Loader {
 
   async loadFBX(url: string) {
     return new Promise((resolve, reject) => {
-      const loader = new FBXLoader(this._manager);
-      loader.load(url, (res) => {
+      this._fbxhandle.load(url, (res) => {
         resolve(res);
       });
     });
@@ -38,9 +37,9 @@ export default class Loader {
 
   private _loadOnprogress() {
     const that: Loader = this;
-    this._manager.onProgress = function (url, itemsLoaded, itemsTotal) {
+    DefaultLoadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
       that._event.dispatchEvent({
-        type: 'load',
+        type: STATIC_LOADED,
         message: { url, itemsLoaded, itemsTotal },
       });
     };

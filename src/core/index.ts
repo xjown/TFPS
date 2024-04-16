@@ -19,8 +19,6 @@ export default class Core {
   collision: Collision;
   world: World;
   ui: UI;
-
-  private static _instance: Core;
   constructor() {
     this.scene = new Scene();
     this.clock = new Clock();
@@ -69,12 +67,5 @@ export default class Core {
       this.orbit_controls.update();
       this.update();
     });
-  }
-
-  public static getStance(): Core {
-    if (this._instance) {
-      return this._instance;
-    }
-    return new Core();
   }
 }

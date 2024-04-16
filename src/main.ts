@@ -1,3 +1,3 @@
 import Core from './core';
 
-Core.getStance();
+new Core();
