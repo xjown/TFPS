@@ -1,7 +1,8 @@
-import { BORDER_TEXTURE } from '@/configs';
+import { BORDER_TEXTURE, UI_EVENT_NAME, STATIC_LOADED } from '@/configs';
 import Character from '../character';
 import Player from '../player';
 import Loader from '../loader';
+import Events from '../events';
 
 import type Core from '../index';
 import type { Mesh as MeshType } from 'three';
@@ -13,6 +14,7 @@ export default class World {
   private _character: Character;
   private _player!: Player;
   private _loader: Loader;
+  private _event = Events.getStance().getEvent(UI_EVENT_NAME);
 
   constructor(instance: Core) {
     this._instance = instance;
@@ -28,6 +30,7 @@ export default class World {
       this._instance.scene.add(model);
       this._instance.scene.add(scene);
       this._updateCharacterState();
+      this._event.dispatchEvent({ type: STATIC_LOADED });
       this._isReady = true;
     } catch (e) {
       console.error('加载失败 ', e);

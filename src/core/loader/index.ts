@@ -1,7 +1,7 @@
 import Events from '../events';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
-import { UI_EVENT_NAME, STATIC_LOADED } from '@/configs';
+import { UI_EVENT_NAME, LOAD_PROCESS } from '@/configs';
 
 import type UIEvent from '../events/ui';
 
@@ -37,10 +37,14 @@ export default class Loader {
 
   private _loadOnprogress() {
     const that: Loader = this;
+    let loadName: string = '';
+    DefaultLoadingManager.onStart = (url, loaded: number, total: number) => {
+      loadName = url;
+    };
     DefaultLoadingManager.onProgress = (url, itemsLoaded, itemsTotal) => {
       that._event.dispatchEvent({
-        type: STATIC_LOADED,
-        message: { url, itemsLoaded, itemsTotal },
+        type: LOAD_PROCESS,
+        message: { url: loadName, itemsLoaded, itemsTotal },
       });
     };
   }

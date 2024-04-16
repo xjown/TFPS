@@ -1,31 +1,43 @@
 import '@/assets/css/index.css';
 import Events from '../events';
-import { UI_EVENT_NAME, STATIC_LOADED } from '@/configs';
+import { UI_EVENT_NAME, STATIC_LOADED, LOAD_PROCESS } from '@/configs';
 
 import type UIEvents from '../events/ui';
 export default class UI {
-  private _event: UIEvents = Events.getStance().getEvent(UI_EVENT_NAME);
+  private _event: UIEvents;
+  private _loadingHandle: HTMLElement;
   constructor() {
+    this._event = Events.getStance().getEvent(UI_EVENT_NAME);
+    this._loadingHandle = document.getElementById('loading')!;
     this._manageLoad();
+    this._loadingOff();
+  }
+
+  _loadingOff() {
+    this._event.addEventListener(STATIC_LOADED, () => {
+      this._createControl();
+      this._loadingHandle.style.display = 'none';
+    });
   }
 
   _manageLoad() {
-    const loading: HTMLElement = document.getElementById('loading')!;
     const loadingText: HTMLElement = document.getElementById('loading-text')!;
+    const loadName = document.createElement('p');
     loadingText.innerHTML = `<div class="g-progress" id="g-progress" style="--progress: 0%"></div>`;
+    loadingText.appendChild(loadName);
+    loadName.style.lineHeight = '30px';
     const progress: HTMLElement = document.getElementById('g-progress')!;
-    const that = this;
-    this._event.addEventListener(STATIC_LOADED, ({ message }) => {
+    this._event.addEventListener(LOAD_PROCESS, ({ message }) => {
       const { url, itemsLoaded, itemsTotal } = message;
       if (itemsLoaded / itemsTotal >= 1) {
-        loading.style.display = 'none';
-        that._createControl();
+        progress.setAttribute('style', `--progress: 0%`);
       } else {
         progress.setAttribute(
           'style',
           `--progress: ${(itemsLoaded / itemsTotal) * 100}%`
         );
       }
+      loadName.innerText = `正在加载${url.split('/').pop()}`;
     });
   }
 
