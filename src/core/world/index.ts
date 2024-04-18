@@ -9,7 +9,6 @@ import type { Mesh as MeshType } from 'three';
 export default class World {
   private _instance: Core;
   private _isReady: boolean = false;
-  gallery_boards: Record<string, MeshType> = {};
   private _num: number = 1;
   private _character: Character;
   private _player!: Player;
@@ -55,10 +54,9 @@ export default class World {
         item.receiveShadow = true;
       }
       if (/gallery.*_board/.test(item.name) && 'isMesh' in item) {
-        this.gallery_boards[item.name] = item;
+        this._instance.collision.addRaycast(item);
       }
     });
-
     this._instance.collision.addGroup(scene);
     return scene;
   }
@@ -76,7 +74,7 @@ export default class World {
       this._num += 1;
       if (this._num == 2) {
         this._instance.collision.calculateBound();
-        // this._instance.scene.add(this._instance.collision.collisionsHelper);
+        this._instance.scene.add(this._instance.collision.collisionsHelper);
       }
     }
   }
