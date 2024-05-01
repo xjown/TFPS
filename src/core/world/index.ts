@@ -74,7 +74,7 @@ export default class World {
       this._num += 1;
       if (this._num == 2) {
         this._instance.collision.calculateBound();
-        this._instance.scene.add(this._instance.collision.collisionsHelper);
+        // this._instance.scene.add(this._instance.collision.collisionsHelper);
       }
     }
   }
