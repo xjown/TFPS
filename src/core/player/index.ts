@@ -45,7 +45,6 @@ export default class Player {
     this._instance = instance;
     this._character = character;
     this._createPlayer();
-
     // 处理跳跃
     this._playerOtherAction();
   }

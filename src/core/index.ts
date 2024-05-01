@@ -9,6 +9,7 @@ import Events from './events';
 import Collision from './collision';
 import World from './world';
 import UI from './ui';
+import Ammo from 'ammojs-typed';
 
 export default class Core {
   scene: SceneType;
@@ -32,8 +33,10 @@ export default class Core {
     this.collision = new Collision();
     this.world = new World(this);
     this.ui = new UI();
-
-    this._init();
+    const loadAmmo = Ammo.bind(Ammo)(Ammo);
+    loadAmmo.then(() => {
+      this._init();
+    });
   }
 
   private _init() {

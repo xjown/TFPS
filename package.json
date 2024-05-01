@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "ammojs-typed": "^1.0.6",
     "nipplejs": "^0.10.2",
     "spatial-controls": "^6.1.1",
     "three": "^0.162.0",
