@@ -23,6 +23,7 @@ export default class Collision {
     item.geometry.disposeBoundsTree = disposeBoundsTree;
     item.geometry.computeVertexNormals();
     item.geometry.computeBoundsTree();
+    console.log(item.geometry);
     this.rayCastGroup.push(item);
   }
 
