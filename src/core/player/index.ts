@@ -5,6 +5,7 @@ import {
   UI_EVENT_NAME,
   KEY_CODE,
 } from '@/configs';
+import PlayPhysics from './PlayPhysics';
 
 import type Core from '../index';
 import type Character from '../character';
@@ -39,7 +40,6 @@ export default class Player {
   private _maxFalling: number = 15;
   private _event: ActionEvent = Events.getStance().getEvent(ACTION_EVENT_NAME);
   private _ui: ActionEvent = Events.getStance().getEvent(UI_EVENT_NAME);
-  private _controlAngle: number = 0;
 
   constructor(instance: Core, character: Character) {
     this._instance = instance;
@@ -281,3 +281,5 @@ export default class Player {
     this._mixer.update(time);
   }
 }
+
+export { PlayPhysics };
