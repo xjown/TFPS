@@ -6,6 +6,10 @@ export default class EntityCollection {
     this.entitys = [];
   }
 
+  find(name: string) {
+    return this.entitys.find((el) => el.name === name);
+  }
+
   addEntity(entity: Entity) {
     entity.setParent(this);
     this.entitys.push(entity);
@@ -20,6 +24,12 @@ export default class EntityCollection {
   physicsUpdate(_: number) {
     for (const entity of this.entitys) {
       entity.physicsUpdate(_);
+    }
+  }
+
+  entitySetup() {
+    for (const entity of this.entitys) {
+      entity.initialize();
     }
   }
 }

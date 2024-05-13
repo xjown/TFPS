@@ -1,4 +1,5 @@
 import '@/assets/css/index.css';
+import Component from '../Component';
 import Events from '../events';
 import {
   UI_EVENT_NAME,
@@ -11,17 +12,21 @@ import jumpImage from '@/assets/images/jump.png';
 
 import type UIEvents from '../events/ui';
 import type ActionEvent from '../events/action';
-export default class UI {
+export default class UI extends Component {
   private _event: UIEvents;
   private _actionEvent: ActionEvent;
   private _loadingHandle: HTMLElement;
+  public name: string = 'ui';
   constructor() {
+    super();
     this._event = Events.getStance().getEvent(UI_EVENT_NAME);
     this._actionEvent = Events.getStance().getEvent(ACTION_EVENT_NAME);
     this._loadingHandle = document.getElementById('loading')!;
     this._manageLoad();
     this._loadingOff();
   }
+
+  initialize() {}
 
   _loadingOff() {
     this._event.addEventListener(STATIC_LOADED, () => {

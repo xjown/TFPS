@@ -4,6 +4,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { UI_EVENT_NAME, LOAD_PROCESS } from '@/configs';
 
 import type UIEvent from '../events/ui';
+import type { Object3D } from 'three';
 
 export default class Loader {
   private _event: UIEvent = Events.getStance().getEvent(UI_EVENT_NAME);
@@ -23,16 +24,12 @@ export default class Loader {
     });
   }
 
-  async loadFBX(url: string) {
+  async loadFBX(url: string): Promise<Object3D> {
     return new Promise((resolve, reject) => {
       this._fbxhandle.load(url, (res) => {
         resolve(res);
       });
     });
-  }
-
-  getManage() {
-    return this._manager;
   }
 
   private _loadOnprogress() {

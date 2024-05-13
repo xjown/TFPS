@@ -1,46 +1,26 @@
-import { BORDER_TEXTURE, UI_EVENT_NAME, STATIC_LOADED } from '@/configs';
-import Character from '../character';
-import Player from '../player';
+import { BORDER_TEXTURE } from '@/configs';
 import Loader from '../loader';
-import Events from '../events';
+import Component from '../Component';
+import Collision from '../collision';
 
 import type Core from '../index';
-import type { Mesh as MeshType } from 'three';
-export default class World {
+
+export default class World extends Component {
   private _instance: Core;
-  private _isReady: boolean = false;
-  private _num: number = 1;
-  private _character: Character;
-  private _player!: Player;
   private _loader: Loader;
-  private _event = Events.getStance().getEvent(UI_EVENT_NAME);
+  public name: string = 'world';
+  collision: Collision;
 
   constructor(instance: Core) {
-    this._instance = instance;
-    this._character = new Character();
+    super();
     this._loader = new Loader();
-    this._init();
+    this._instance = instance;
+    this.collision = new Collision();
   }
 
-  private async _init() {
-    try {
-      const scene = await this._loadScene();
-      const model = await this._character.load(this._loader);
-      this._instance.scene.add(model);
-      this._instance.scene.add(scene);
-      this._updateCharacterState();
-      this._isReady = true;
-      this._event.dispatchEvent({ type: STATIC_LOADED });
-    } catch (e) {
-      console.error('加载失败 ', e);
-    }
-  }
+  initialize() {}
 
-  private _updateCharacterState() {
-    this._player = new Player(this._instance, this._character);
-  }
-
-  private async _loadScene() {
+  async load() {
     const { scene } = await this._loader.loadGLTF(BORDER_TEXTURE);
     scene.traverse((item) => {
       if (item.name === 'home001' || item.name === 'PointLight') {
@@ -54,28 +34,21 @@ export default class World {
         item.receiveShadow = true;
       }
       if (/gallery.*_board/.test(item.name) && 'isMesh' in item) {
-        this._instance.collision.addRaycast(item);
+        this.collision.addRaycast(item);
       }
     });
-    this._instance.collision.addGroup(scene);
+
+    this.collision.addGroup(scene);
+    this._instance.scene.add(scene);
+
     return scene;
   }
 
-  getState() {
-    return this._isReady;
+  getCollision() {
+    return this.collision;
   }
 
   update(time: number) {
-    if (this.getState()) {
-      this._player.update(time);
-      /**
-       * TODO:直接调用会导致生成的边界值不准确
-       */
-      this._num += 1;
-      if (this._num == 2) {
-        this._instance.collision.calculateBound();
-        // this._instance.scene.add(this._instance.collision.collisionsHelper);
-      }
-    }
+    // this._instance.scene.add(this.collision.collisionsHelper);
   }
 }

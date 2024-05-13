@@ -23,13 +23,10 @@ export default class Events {
   }
 
   private _registerEvents(event: EventDispatcher, name: string) {
-    if (this._events[name]) {
-      return;
-    }
     this._events[name] = event;
   }
 
-  getEvent(name: string) {
+  getEvent(name: string): EventDispatcher {
     return this._events[name];
   }
 }

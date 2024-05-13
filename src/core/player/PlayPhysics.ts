@@ -2,9 +2,10 @@ import { Ammo } from '@/core/ammo';
 import Component from '@/core/Component';
 export default class PlayPhysics extends Component {
   public name: string = 'playPhysics';
-  constructor() {
+  physicsWorld: Ammo.btDiscreteDynamicsWorld;
+  constructor(physicsWorld: Ammo.btDiscreteDynamicsWorld) {
     super();
-    this.name = 'playPhysics';
+    this.physicsWorld = physicsWorld;
   }
 
   initialize() {

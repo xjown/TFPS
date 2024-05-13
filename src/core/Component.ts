@@ -1,5 +1,5 @@
 import type Entity from './Entity';
-export default class Component {
+export default abstract class Component {
   parent: Entity | null;
   name: string | null;
 
@@ -12,6 +12,13 @@ export default class Component {
     this.parent = component;
   }
 
+  FindEntity(name: string) {
+    if (this.parent) {
+      return this.parent.FindEntity(name);
+    }
+    return null;
+  }
+
   getComponent(name: string): Component | null {
     if (this.parent) {
       return this.parent.getComponent(name);
@@ -19,9 +26,13 @@ export default class Component {
     return null;
   }
 
-  initialize(_: number) {}
+  public abstract initialize(): void;
 
   update(_: number) {}
+
+  load(): Promise<unknown> {
+    return Promise.resolve();
+  }
 
   physicsUpdate(_: number) {}
 }

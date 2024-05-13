@@ -4,7 +4,9 @@ import nipplejs from 'nipplejs';
 export type VisibleModeType = 'pc' | 'mobile';
 export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
 
-export default class ActionEvent extends EventDispatcher {
+export default class ActionEvent extends EventDispatcher<{
+  [KEY_CODE]: { message: { code: string } };
+}> {
   mode: VisibleModeType = 'pc';
   downDowning: { [key in allowKeyDownType]: boolean } = {
     KeyW: false,
@@ -13,6 +15,7 @@ export default class ActionEvent extends EventDispatcher {
     KeyS: false,
   };
   private _allowKeyDown: string[] = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
+
   constructor() {
     super();
   }
@@ -34,29 +37,28 @@ export default class ActionEvent extends EventDispatcher {
       mode: 'static',
       position: { left: '50%', top: '50%' },
     });
-    control
-      .on('move', (res, data) => {
-        const { direction, angle } = data;
-        if (!angle) return;
+    control.on('move', (res, data) => {
+      const { direction, angle } = data;
+      if (!angle) return;
 
-        const { degree } = angle;
-        if (degree >= 330 || degree <= 60) {
-          this._resetKey();
-          this.downDowning['KeyD'] = true;
-        } else if (degree >= 60 && degree <= 150) {
-          this._resetKey();
-          this.downDowning['KeyW'] = true;
-        } else if (degree >= 150 && degree <= 240) {
-          this._resetKey();
-          this.downDowning['KeyA'] = true;
-        } else if (degree >= 240 && degree <= 330) {
-          this._resetKey();
-          this.downDowning['KeyS'] = true;
-        }
-      })
-      .on('end', () => {
+      const { degree } = angle;
+      if (degree >= 330 || degree <= 60) {
         this._resetKey();
-      });
+        this.downDowning['KeyD'] = true;
+      } else if (degree >= 60 && degree <= 150) {
+        this._resetKey();
+        this.downDowning['KeyW'] = true;
+      } else if (degree >= 150 && degree <= 240) {
+        this._resetKey();
+        this.downDowning['KeyA'] = true;
+      } else if (degree >= 240 && degree <= 330) {
+        this._resetKey();
+        this.downDowning['KeyS'] = true;
+      }
+    });
+    control.on('end', () => {
+      this._resetKey();
+    });
   }
 
   private _resetKey() {

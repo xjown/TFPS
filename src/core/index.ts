@@ -1,20 +1,25 @@
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+
+import Events from './events';
+import { STATIC_LOADED, UI_EVENT_NAME } from '@/configs';
+
+import { AmmoHelper, Ammo } from './ammo';
+
+import EntityCollection from './EntityCollection';
+import Entity from './Entity';
+
+// Entity
+import { PlayPhysics, PlayControl } from '@/core/player';
+import World from './world';
+import UI from './ui';
+
 import type {
   Scene as SceneType,
   Clock as ClockType,
   WebGLRenderer as WebGLRendererType,
   PerspectiveCamera as PerspectiveCameraType,
 } from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import Events from './events';
-import Collision from './collision';
-import World from './world';
-import UI from './ui';
-import { AmmoHelper, Ammo } from './ammo';
-
-import EntityCollection from './EntityCollection';
-import Entity from './Entity';
-
-import { PlayPhysics } from '@/core/player';
+import type UIEvents from '@/core/events/ui';
 
 export default class Core {
   scene: SceneType;
@@ -22,10 +27,8 @@ export default class Core {
   renderer: WebGLRendererType;
   camera: PerspectiveCameraType;
   orbit_controls: OrbitControls;
-  collision: Collision;
   world: World;
   physicsWorld!: Ammo.btDiscreteDynamicsWorld;
-  ui: UI;
   entityCollection!: EntityCollection;
 
   constructor() {
@@ -38,9 +41,7 @@ export default class Core {
       this.renderer.domElement
     );
     Events.getStance().init();
-    this.collision = new Collision();
     this.world = new World(this);
-    this.ui = new UI();
     AmmoHelper.init(() => this._init());
   }
 
@@ -48,17 +49,52 @@ export default class Core {
     this._setupPhysics();
     this._setupGraphic();
     this._entitySetup();
-    this.update();
   }
 
-  private _entitySetup() {
+  private async _entitySetup() {
+    const assets: Entity[] = [];
     this.entityCollection = new EntityCollection();
 
     // player
     const playerEntity = new Entity('player');
-    playerEntity.addComponent(new PlayPhysics());
+    playerEntity.addComponent(new PlayControl(this));
+    playerEntity.addComponent(new PlayPhysics(this.physicsWorld));
+    assets.push(playerEntity);
+
+    // ui
+    const uiEntity = new Entity('ui');
+    uiEntity.addComponent(new UI());
+
+    // world
+    const worldEntity = new Entity('world');
+    worldEntity.addComponent(new World(this));
+    assets.push(worldEntity);
 
     this.entityCollection.addEntity(playerEntity);
+    this.entityCollection.addEntity(uiEntity);
+    this.entityCollection.addEntity(worldEntity);
+
+    await this._loadAssets(assets);
+    this.entityCollection.entitySetup();
+    this.update();
+  }
+
+  _loadAssets(assets: Entity[]) {
+    let count: number = 0;
+    let process: number = 0;
+    const ui: UIEvents = Events.getStance().getEvent(UI_EVENT_NAME);
+    return new Promise((solver, reject) => {
+      for (let item of assets) {
+        item.load()?.then(() => {
+          count += 1;
+          process = (count / assets.length) * 100;
+          if (process >= 100) {
+            ui.dispatchEvent({ type: STATIC_LOADED });
+            solver(true);
+          }
+        });
+      }
+    });
   }
 
   private _setupGraphic() {
@@ -97,6 +133,8 @@ export default class Core {
 
     // 设置重力
     this.physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
+
+    this.physicsWorld.setInternalTickCallback(this._physicsUpdate.bind(this));
   }
 
   private _RenderRespect() {
@@ -106,12 +144,21 @@ export default class Core {
     this.camera.updateProjectionMatrix();
   }
 
+  private _physicsUpdate() {
+    console.log(111);
+  }
+
   private update() {
-    requestAnimationFrame((time) => {
+    window.requestAnimationFrame(() => {
+      const time = Math.min(1.0 / 30.0, this.clock.getDelta());
       this.renderer.render(this.scene, this.camera);
-      this.entityCollection.update(Math.min(0.03, this.clock.getDelta()));
-      this.world.update(Math.min(0.03, this.clock.getDelta()));
+
       this.orbit_controls.update();
+
+      this.physicsWorld.stepSimulation(time, 10);
+
+      this.entityCollection.update(time);
+
       this.update();
     });
   }

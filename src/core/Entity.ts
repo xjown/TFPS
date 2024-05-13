@@ -2,9 +2,9 @@ import type Component from './Component';
 import type EntityCollection from './EntityCollection';
 export default class Entity {
   private components: { [key: string]: Component };
-
-  private name: string;
   private parent: EntityCollection | null;
+
+  name: string;
 
   constructor(name: string) {
     this.components = {};
@@ -21,11 +21,17 @@ export default class Entity {
     return this.components[name];
   }
 
+  FindEntity(name: string) {
+    if (this.parent) {
+      return this.parent.find(name);
+    } else {
+      return null;
+    }
+  }
+
   setParent(entity: EntityCollection) {
     this.parent = entity;
   }
-
-  findEntity() {}
 
   update(_: number) {
     for (let i in this.components) {
@@ -33,9 +39,23 @@ export default class Entity {
     }
   }
 
+  load() {
+    const promise: Promise<unknown>[] = [];
+    for (let i in this.components) {
+      promise.push(this.components[i].load());
+    }
+    return Promise.all(promise);
+  }
+
   physicsUpdate(_: number) {
     for (let i in this.components) {
       this.components[i].physicsUpdate(_);
+    }
+  }
+
+  initialize() {
+    for (let i in this.components) {
+      this.components[i].initialize();
     }
   }
 }
