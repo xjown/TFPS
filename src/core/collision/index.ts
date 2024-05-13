@@ -1,4 +1,3 @@
-import type { Object3D as Object3DType, Mesh as MeshType } from 'three';
 import {
   MeshBVH,
   StaticGeometryGenerator,
@@ -7,15 +6,14 @@ import {
   computeBoundsTree,
   disposeBoundsTree,
 } from 'three-mesh-bvh';
+
+import type { Object3D as Object3DType, Mesh as MeshType } from 'three';
+import type { MeshBVHOptions } from 'three-mesh-bvh';
+
 export default class Collision {
   collisions!: MeshType;
   collisionsHelper!: MeshBVHHelper;
   rayCastGroup: MeshType[] = [];
-  private _children!: Object3DType;
-
-  addGroup(child: Object3DType) {
-    this._children = child;
-  }
 
   addRaycast(item: MeshType) {
     item.raycast = acceleratedRaycast;
@@ -26,13 +24,19 @@ export default class Collision {
     this.rayCastGroup.push(item);
   }
 
-  calculateBound() {
-    const geometry = new StaticGeometryGenerator(this._children);
+  calculateBound(scene: Object3DType) {
+    const geometry = new StaticGeometryGenerator(scene);
 
     geometry.attributes = ['position'];
+
     const collision = geometry.generate();
-    collision.boundsTree = new MeshBVH(collision);
+
+    collision.boundsTree = new MeshBVH(collision, {
+      lazyGeneration: false,
+    } as MeshBVHOptions);
+
     this.collisions = new Mesh(collision);
+
     this.collisionsHelper = new MeshBVHHelper(this.collisions, 2);
     this.collisionsHelper.opacity = 0.8;
   }

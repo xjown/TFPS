@@ -17,7 +17,7 @@ dependencies:
   nipplejs: 0.10.2
   spatial-controls: 6.1.1_three@0.162.0
   three: 0.162.0
-  three-mesh-bvh: 0.7.3_three@0.162.0
+  three-mesh-bvh: 0.7.4_three@0.162.0
 
 devDependencies:
   '@types/node': 20.11.30
@@ -753,8 +753,8 @@ packages:
       acorn: 8.11.3
     dev: true
 
-  /three-mesh-bvh/0.7.3_three@0.162.0:
-    resolution: {integrity: sha512-3W6KjzmupjfE89GuHPT31kxKWZ4YGZPEZJNysJpiOZfQRsBQQgmK7v/VJPpjG6syhAvTnY+5Fr77EvIkTLpGSw==}
+  /three-mesh-bvh/0.7.4_three@0.162.0:
+    resolution: {integrity: sha512-flxe0A4uflTPR6elgq/Y8VrLoljDNS899i422SxQcU3EtMj6o8z4kZRyqZqGWzR0qMf1InTZzY1/0xZl/rnvVw==}
     peerDependencies:
       three: '>= 0.151.0'
     dependencies:

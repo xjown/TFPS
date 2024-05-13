@@ -101,12 +101,15 @@ export default class Core {
     const app: HTMLElement = document.getElementById('app')!;
 
     this.renderer.toneMapping = ACESFilmicToneMapping;
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.outputColorSpace = SRGBColorSpace;
     this.camera.position.set(0, 0, 1);
     this.orbit_controls.dampingFactor = 0.2;
     this.orbit_controls.enableZoom = false;
     this.orbit_controls.enablePan = false;
 
     this._RenderRespect();
+
     window.addEventListener('resize', () => {
       this._RenderRespect();
     });

@@ -22,6 +22,7 @@ export default class World extends Component {
 
   async load() {
     const { scene } = await this._loader.loadGLTF(BORDER_TEXTURE);
+
     scene.traverse((item) => {
       if (item.name === 'home001' || item.name === 'PointLight') {
         item.castShadow = true;
@@ -38,8 +39,11 @@ export default class World extends Component {
       }
     });
 
-    this.collision.addGroup(scene);
     this._instance.scene.add(scene);
+
+    setTimeout(() => {
+      this.collision.calculateBound(scene);
+    }, 1000);
 
     return scene;
   }

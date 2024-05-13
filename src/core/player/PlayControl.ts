@@ -36,6 +36,7 @@ export default class PlayControl extends Component {
   private _maxFalling: number = 15;
   private _event: ActionEvent;
   public name: string = 'playControl';
+  private _worldEntity!: Component;
 
   constructor(instance: Core) {
     super();
@@ -50,6 +51,10 @@ export default class PlayControl extends Component {
     this._createPlayer();
     // 处理跳跃
     this._playerOtherAction();
+
+    this._worldEntity = this.FindEntity('world')?.getComponent(
+      'world'
+    ) as Component;
   }
 
   async load() {
@@ -80,8 +85,11 @@ export default class PlayControl extends Component {
   }
 
   update(time: number) {
-    this._checkCollision(time);
-    this._updatePlayer(time);
+    if ((this._worldEntity as World).getCollision().collisions) {
+      this._checkCollision(time);
+      this._updatePlayer(time);
+    }
+
     this._checkFalling();
 
     // action
@@ -183,10 +191,9 @@ export default class PlayControl extends Component {
     });
   }
   private _checkCollision(time: number) {
-    const worldEntity = this.FindEntity('world')?.getComponent('world');
-    if (!worldEntity) return;
-    const collisionComponent: Collision = (worldEntity as World).getCollision();
-    collisionComponent.calculateBound();
+    const collisionComponent: Collision = (
+      this._worldEntity as World
+    ).getCollision();
 
     this._frameBox.makeEmpty();
     this._frameLine.set(new Vector3(0, 0, 0), new Vector3(0, -3, 0));

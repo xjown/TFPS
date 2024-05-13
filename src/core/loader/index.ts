@@ -17,19 +17,11 @@ export default class Loader {
   }
 
   async loadGLTF(url: string) {
-    return new Promise((resolve, reject) => {
-      this._gltfHandle.load(url, (res) => {
-        resolve(res);
-      });
-    });
+    return this._gltfHandle.loadAsync(url);
   }
 
   async loadFBX(url: string): Promise<Object3D> {
-    return new Promise((resolve, reject) => {
-      this._fbxhandle.load(url, (res) => {
-        resolve(res);
-      });
-    });
+    return this._fbxhandle.loadAsync(url);
   }
 
   private _loadOnprogress() {
