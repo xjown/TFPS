@@ -1,4 +1,6 @@
 import type Entity from './Entity';
+import type { Ammo } from '@/core/ammo';
+
 export default abstract class Component {
   parent: Entity | null;
   name: string | null;
@@ -34,5 +36,5 @@ export default abstract class Component {
     return Promise.resolve();
   }
 
-  physicsUpdate(_: number) {}
+  physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number) {}
 }

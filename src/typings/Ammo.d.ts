@@ -1,6 +1,6 @@
 declare function Ammo<T>(target?: T): Promise<T & typeof Ammo>;
 declare module 'ammo.js' {
-  function addFunction(fn: () => void): () => {};
+  function addFunction(fn: btInternalTickCallback): () => {};
   function destroy(obj: any): void;
   class btIDebugDraw {
     drawLine(from: btVector3, to: btVector3, color: btVector3): void;

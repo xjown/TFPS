@@ -1,5 +1,7 @@
 import Entity from './Entity';
 
+import type { Ammo } from '@/core/ammo';
+
 export default class EntityCollection {
   entitys: Entity[] = [];
   constructor() {
@@ -21,9 +23,9 @@ export default class EntityCollection {
     }
   }
 
-  physicsUpdate(_: number) {
+  physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number) {
     for (const entity of this.entitys) {
-      entity.physicsUpdate(_);
+      entity.physicsUpdate(world, timeStep);
     }
   }
 

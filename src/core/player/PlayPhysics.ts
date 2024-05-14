@@ -48,7 +48,5 @@ export default class PlayPhysics extends Component {
     this.physicsWorld.addRigidBody(this.body);
   }
 
-  physicsUpdate(time: number) {
-    console.log(11);
-  }
+  physicsUpdate() {}
 }

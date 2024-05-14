@@ -149,8 +149,8 @@ export default class Core {
     this.camera.updateProjectionMatrix();
   }
 
-  private _physicsUpdate() {
-    // console.log(this);
+  private _physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number) {
+    this.entityCollection.physicsUpdate(world, timeStep);
   }
 
   private update() {

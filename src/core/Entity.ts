@@ -1,5 +1,7 @@
 import type Component from './Component';
 import type EntityCollection from './EntityCollection';
+import type { Ammo } from '@/core/ammo';
+
 export default class Entity {
   private components: { [key: string]: Component };
   private parent: EntityCollection | null;
@@ -47,9 +49,9 @@ export default class Entity {
     return Promise.all(promise);
   }
 
-  physicsUpdate(_: number) {
+  physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number) {
     for (let i in this.components) {
-      this.components[i].physicsUpdate(_);
+      this.components[i].physicsUpdate(world, timeStep);
     }
   }
 
