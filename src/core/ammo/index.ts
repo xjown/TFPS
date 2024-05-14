@@ -1,9 +1,9 @@
-import Ammo from 'ammojs-typed';
+import Ammo from 'ammo.js';
 
 class AmmoHelper {
   static init(callback = () => {}) {
-    const loadAmmo = Ammo.bind(Ammo)(Ammo);
-    loadAmmo.then(() => {
+    // @ts-ignore
+    Ammo.bind(Ammo)(Ammo).then(() => {
       callback();
     });
   }

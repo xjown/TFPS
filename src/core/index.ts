@@ -57,8 +57,8 @@ export default class Core {
 
     // player
     const playerEntity = new Entity('player');
-    playerEntity.addComponent(new PlayControl(this));
     playerEntity.addComponent(new PlayPhysics(this.physicsWorld));
+    playerEntity.addComponent(new PlayControl(this));
     assets.push(playerEntity);
 
     // ui
@@ -137,7 +137,9 @@ export default class Core {
     // 设置重力
     this.physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
 
-    this.physicsWorld.setInternalTickCallback(this._physicsUpdate.bind(this));
+    this.physicsWorld.setInternalTickCallback(
+      Ammo.addFunction(this._physicsUpdate.bind(this))
+    );
   }
 
   private _RenderRespect() {
@@ -148,19 +150,20 @@ export default class Core {
   }
 
   private _physicsUpdate() {
-    console.log(111);
+    // console.log(this);
   }
 
   private update() {
     window.requestAnimationFrame(() => {
       const time = Math.min(1.0 / 30.0, this.clock.getDelta());
-      this.renderer.render(this.scene, this.camera);
 
       this.orbit_controls.update();
 
       this.physicsWorld.stepSimulation(time, 10);
 
       this.entityCollection.update(time);
+
+      this.renderer.render(this.scene, this.camera);
 
       this.update();
     });

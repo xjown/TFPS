@@ -3,7 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@types/node': ^20.11.30
   '@types/three': ^0.162.0
-  ammojs-typed: ^1.0.6
+  ammo.js: kripken/ammo.js
   nipplejs: ^0.10.2
   spatial-controls: ^6.1.1
   three: ^0.162.0
@@ -13,7 +13,7 @@ specifiers:
   vite: ^5.2.0
 
 dependencies:
-  ammojs-typed: 1.0.6
+  ammo.js: github.com/kripken/ammo.js/1ed8b58c7058a5f697f2642ceef8ee20fdd55e10
   nipplejs: 0.10.2
   spatial-controls: 6.1.1_three@0.162.0
   three: 0.162.0
@@ -424,10 +424,6 @@ packages:
     engines: {node: '>=0.4.0'}
     hasBin: true
     dev: true
-
-  /ammojs-typed/1.0.6:
-    resolution: {integrity: sha512-ut/tD0m5eEdlJ5KK97ma6SIEGZ4FN3AJTSVz8wl6C4EtnpVQdP70lOwgDMJKsHjTohxc2/xEZl6yJfMBZNlQ5w==}
-    dev: false
 
   /anymatch/3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
@@ -884,3 +880,9 @@ packages:
   /webpack-virtual-modules/0.6.1:
     resolution: {integrity: sha512-poXpCylU7ExuvZK8z+On3kX+S8o/2dQ/SVYueKA0D4WEMXROXgY8Ez50/bQEUmvoSMMrWcrJqCHuhAbsiwg7Dg==}
     dev: true
+
+  github.com/kripken/ammo.js/1ed8b58c7058a5f697f2642ceef8ee20fdd55e10:
+    resolution: {tarball: https://codeload.github.com/kripken/ammo.js/tar.gz/1ed8b58c7058a5f697f2642ceef8ee20fdd55e10}
+    name: ammo.js
+    version: 0.0.2
+    dev: false

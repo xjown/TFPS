@@ -2,6 +2,7 @@ import Events from '../events';
 import { ACTION_EVENT_NAME, KEY_CODE } from '@/configs';
 import Component from '@/core/Component';
 import { Man } from '../character';
+import { Ammo } from '@/core/ammo';
 
 import type Core from '../index';
 import type ActionEvent from '../events/action';
@@ -31,34 +32,41 @@ export default class PlayControl extends Component {
   private _downDistance: Vector3Type = new Vector3(0, 0, 0);
   private _gravity: number = 15;
   private _mixer!: AnimationMixerType;
-  private _character: Man;
   private _currentAction: string = 'idle';
   private _maxFalling: number = 15;
   private _event: ActionEvent;
-  public name: string = 'playControl';
   private _worldEntity!: Component;
+  private _body!: Ammo.btRigidBody;
+  private _physicsWorld!: Component;
+
+  public position: Vector3Type;
+  public character: Man;
+  public name: string = 'playControl';
 
   constructor(instance: Core) {
     super();
     this._instance = instance;
     this._event = Events.getStance().getEvent(ACTION_EVENT_NAME);
+    this.position = new Vector3(0, 0, 0);
 
     // default Character
-    this._character = new Man();
+    this.character = new Man();
   }
 
   initialize() {
-    this._createPlayer();
-    // 处理跳跃
-    this._playerOtherAction();
-
+    this._physicsWorld = this.getComponent('playPhysics')!;
     this._worldEntity = this.FindEntity('world')?.getComponent(
       'world'
     ) as Component;
+    this._body = this._physicsWorld.body as Ammo.btRigidBody;
+
+    this._createPlayer();
+    // 处理跳跃
+    this._playerOtherAction();
   }
 
   async load() {
-    const model = await this._character.load();
+    const model = await this.character.load();
     this._instance.scene.add(model);
     return model;
   }
@@ -66,15 +74,15 @@ export default class PlayControl extends Component {
   _createPlayer() {
     this._player = new Mesh(
       new BoxGeometry(
-        this._character.size.x,
-        this._character.size.y,
-        this._character.size.z
+        this.character.size.x,
+        this.character.size.y,
+        this.character.size.z
       ),
       new MeshBasicMaterial({ color: 0x00ff00 })
     );
 
-    this._mixer = new AnimationMixer(this._character.person);
-    this._mixer.clipAction(this._character.actions['idle']).play();
+    this._mixer = new AnimationMixer(this.character.person);
+    this._mixer.clipAction(this.character.actions['idle']).play();
 
     this._switchVisual();
 
@@ -95,6 +103,14 @@ export default class PlayControl extends Component {
     // action
     this._updateAction(time);
 
+    const ms = this._body.getMotionState();
+
+    if (ms) {
+      const transform = new Ammo.btTransform();
+      ms.getWorldTransform(transform);
+      // console.log(transform.getOrigin().y());
+    }
+
     // 调整摄像机
     const cameraDistance = new Vector3().subVectors(
       this._player.position,
@@ -103,6 +119,12 @@ export default class PlayControl extends Component {
     this._instance.orbit_controls.target.copy(this._player.position);
     this._instance.camera.position.add(cameraDistance);
     this._instance.camera.updateMatrix();
+
+    this.position.set(
+      this._player.position.x,
+      this._player.position.y,
+      this._player.position.z
+    );
   }
 
   private _checkFalling() {
@@ -148,7 +170,7 @@ export default class PlayControl extends Component {
 
   private _switchVisual() {
     if (!this._basePlayerInfo.firstPerson) {
-      this._character.person.visible = true;
+      this.character.person.visible = true;
       this._instance.camera.position
         .sub(this._instance.orbit_controls.target)
         .normalize()
@@ -166,7 +188,7 @@ export default class PlayControl extends Component {
       this._instance.camera.position.z /= 10;
 
       this._instance.camera.position.add(this._instance.orbit_controls.target);
-      this._character.person.visible = false;
+      this.character.person.visible = false;
       this._instance.orbit_controls.maxPolarAngle = Math.PI;
       this._instance.orbit_controls.minDistance = 1e-4;
       this._instance.orbit_controls.maxDistance = 1e-4;
@@ -254,7 +276,7 @@ export default class PlayControl extends Component {
     let nextAction: string = '';
     const cameraAngle = this._instance.orbit_controls.getAzimuthalAngle();
     const characterAngle = new Quaternion().copy(
-      this._character.person.quaternion
+      this.character.person.quaternion
     );
 
     if (
@@ -277,21 +299,21 @@ export default class PlayControl extends Component {
 
     if (this._currentAction !== nextAction) {
       this._mixer
-        .clipAction(this._character.actions[this._currentAction])
+        .clipAction(this.character.actions[this._currentAction])
         ?.fadeOut(0.1);
       this._mixer
-        .clipAction(this._character.actions[nextAction])
+        .clipAction(this.character.actions[nextAction])
         ?.reset()
         .play()
         .fadeIn(0.1);
     }
 
     characterAngle.setFromAxisAngle(new Vector3(0, 1, 0), cameraAngle + angle);
-    this._character.person.quaternion.slerp(characterAngle, 0.2);
-    this._character.person.position
+    this.character.person.quaternion.slerp(characterAngle, 0.2);
+    this.character.person.position
       .applyMatrix4(this._player.matrixWorld)
       .copy(this._player.position.clone());
-    this._character.person.translateY(-4);
+    this.character.person.translateY(-4);
 
     this._currentAction = nextAction;
     this._mixer.update(time);
