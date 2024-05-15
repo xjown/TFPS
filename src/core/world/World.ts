@@ -18,9 +18,7 @@ export default class World extends Component {
     this.collision = new Collision();
   }
 
-  initialize() {
-    this._staticCollision();
-  }
+  initialize() {}
 
   async load() {
     const { scene } = await this._loader.loadGLTF(BORDER_TEXTURE);
@@ -50,14 +48,6 @@ export default class World extends Component {
 
   getCollision() {
     return this.collision;
-  }
-
-  private _staticCollision() {
-    const geometry = new BoxGeometry(47, 0.1, 85);
-    const material = new MeshBasicMaterial({ color: 0x00ff00 });
-    const plane = new Mesh(geometry, material);
-    plane.position.set(5, 0, 8);
-    // this._instance.scene.add(plane);
   }
 
   update(time: number) {

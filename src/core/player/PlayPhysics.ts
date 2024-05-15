@@ -20,10 +20,22 @@ export default class PlayPhysics extends Component {
 
     const transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(0, 8, 0));
+    transform.setOrigin(
+      new Ammo.btVector3(
+        playControl.position.x,
+        playControl.position.y,
+        playControl.position.z
+      )
+    );
 
     const localInertia = new Ammo.btVector3(0, 0, 0);
-    const boxShape = new Ammo.btBoxShape(new Ammo.btVector3(1, 1, 1));
+    const boxShape = new Ammo.btBoxShape(
+      new Ammo.btVector3(
+        playControl.character.size.x,
+        playControl.character.size.y,
+        playControl.character.size.z
+      )
+    );
     boxShape.calculateLocalInertia(playControl.character.mass, localInertia);
     boxShape.setMargin(0.05);
 

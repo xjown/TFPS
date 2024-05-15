@@ -93,22 +93,24 @@ export default class PlayControl extends Component {
     this._instance.scene.add(this._player);
   }
 
+  physicsUpdate(): void {
+    const ms = this._body.getMotionState();
+    if (ms) {
+      const transform = new Ammo.btTransform();
+      ms.getWorldTransform(transform);
+    }
+  }
+
   update(time: number) {
     if ((this._worldEntity as World).getCollision().collisions) {
-      // this._checkCollision(time);
-      // this._updatePlayer(time);
+      this._checkCollision(time);
+      this._updatePlayer(time);
     }
 
     this._checkFalling();
 
     // action
     this._updateAction(time);
-
-    const ms = this._body.getMotionState();
-    if (ms) {
-      const transform = new Ammo.btTransform();
-      ms.getWorldTransform(transform);
-    }
 
     // 调整摄像机
     const cameraDistance = new Vector3().subVectors(
