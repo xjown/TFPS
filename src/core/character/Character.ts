@@ -6,7 +6,7 @@ export default abstract class Character extends Loader {
 
   constructor() {
     super();
-    this.mass = 5;
+    this.mass = 0;
     this.size = { x: 0, y: 0, z: 0 };
   }
 

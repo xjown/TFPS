@@ -3,6 +3,7 @@ import { ACTION_EVENT_NAME, KEY_CODE } from '@/configs';
 import Component from '@/core/Component';
 import { Man } from '../character';
 import { Ammo } from '@/core/ammo';
+import { boxHelper } from '@/core/helper';
 
 import type Core from '../index';
 import type ActionEvent from '../events/action';
@@ -94,8 +95,8 @@ export default class PlayControl extends Component {
 
   update(time: number) {
     if ((this._worldEntity as World).getCollision().collisions) {
-      this._checkCollision(time);
-      this._updatePlayer(time);
+      // this._checkCollision(time);
+      // this._updatePlayer(time);
     }
 
     this._checkFalling();
@@ -104,11 +105,9 @@ export default class PlayControl extends Component {
     this._updateAction(time);
 
     const ms = this._body.getMotionState();
-
     if (ms) {
       const transform = new Ammo.btTransform();
       ms.getWorldTransform(transform);
-      // console.log(transform.getOrigin().y());
     }
 
     // 调整摄像机

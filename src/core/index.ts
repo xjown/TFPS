@@ -10,7 +10,7 @@ import Entity from './Entity';
 
 // Entity
 import { PlayPhysics, PlayControl } from '@/core/player';
-import World from './world';
+import { World, WorldPhysics } from './world';
 import UI from './ui';
 
 import type {
@@ -55,20 +55,21 @@ export default class Core {
     const assets: Entity[] = [];
     this.entityCollection = new EntityCollection();
 
-    // player
-    const playerEntity = new Entity('player');
-    playerEntity.addComponent(new PlayPhysics(this.physicsWorld));
-    playerEntity.addComponent(new PlayControl(this));
-    assets.push(playerEntity);
-
     // ui
     const uiEntity = new Entity('ui');
     uiEntity.addComponent(new UI());
 
     // world
     const worldEntity = new Entity('world');
+    worldEntity.addComponent(new WorldPhysics(this.physicsWorld));
     worldEntity.addComponent(new World(this));
     assets.push(worldEntity);
+
+    // player
+    const playerEntity = new Entity('player');
+    playerEntity.addComponent(new PlayPhysics(this.physicsWorld));
+    playerEntity.addComponent(new PlayControl(this));
+    assets.push(playerEntity);
 
     this.entityCollection.addEntity(playerEntity);
     this.entityCollection.addEntity(uiEntity);

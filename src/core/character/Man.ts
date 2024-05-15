@@ -22,6 +22,9 @@ export default class Man extends Character {
 
   constructor() {
     super();
+
+    this.mass = 1;
+
     this.size.x = 2;
     this.size.y = 8;
     this.size.z = 1;
