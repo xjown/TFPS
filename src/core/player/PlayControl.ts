@@ -62,7 +62,8 @@ export default class PlayControl extends Component {
     this._body = this._physicsWorld.body as Ammo.btRigidBody;
 
     this._createPlayer();
-    // 处理跳跃
+
+    // 处理事件
     this._playerOtherAction();
   }
 
@@ -171,7 +172,6 @@ export default class PlayControl extends Component {
 
   private _switchVisual() {
     if (!this._basePlayerInfo.firstPerson) {
-      this.character.person.visible = true;
       this._instance.camera.position
         .sub(this._instance.orbit_controls.target)
         .normalize()
@@ -180,6 +180,7 @@ export default class PlayControl extends Component {
       this._instance.orbit_controls.maxPolarAngle = Math.PI / 2;
       this._instance.orbit_controls.minDistance = 1;
       this._instance.orbit_controls.maxDistance = 20;
+      this.character.person.visible = true;
     } else {
       this._instance.camera.position
         .sub(this._instance.orbit_controls.target)
@@ -187,12 +188,11 @@ export default class PlayControl extends Component {
       this._instance.camera.position.x /= 10;
       this._instance.camera.position.y /= 10;
       this._instance.camera.position.z /= 10;
-
       this._instance.camera.position.add(this._instance.orbit_controls.target);
-      this.character.person.visible = false;
       this._instance.orbit_controls.maxPolarAngle = Math.PI;
       this._instance.orbit_controls.minDistance = 1e-4;
       this._instance.orbit_controls.maxDistance = 1e-4;
+      this.character.person.visible = false;
     }
     this._basePlayerInfo.firstPerson = !this._basePlayerInfo.firstPerson;
   }

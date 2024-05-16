@@ -23,7 +23,6 @@ export default class LightFlowWall extends Effect {
       vertexShader: lightFLowVertex,
       fragmentShader: lightFLowFragment,
       side: DoubleSide,
-      depthTest: false,
       blending: AdditiveBlending,
     });
 
