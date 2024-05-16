@@ -1,22 +1,19 @@
 import Effect from './Effect';
-import { LIGHT_FLOW_TEXTURE } from '@/configs';
 import { lightFLowFragment, lightFLowVertex } from '../glsl';
 
 import type {
   BufferGeometry as BufferGeometryType,
   Mesh as MeshType,
+  ShaderMaterial as ShaderMaterialType,
 } from 'three';
 export default class LightFlowWall extends Effect {
   private _shape: BufferGeometryType;
-  private _material!: ShaderMaterial;
-  public mesh!: MeshType;
+  private _material!: ShaderMaterialType;
+  private _mesh!: MeshType;
 
   constructor(radius: number, height: number) {
     super();
     this._shape = new CylinderGeometry(radius, radius, height, 32, 1, true);
-  }
-
-  async load() {
     this._material = new ShaderMaterial({
       uniforms: {
         iTime: {
@@ -30,14 +27,23 @@ export default class LightFlowWall extends Effect {
       blending: AdditiveBlending,
     });
 
-    this.mesh = new Mesh(this._shape, this._material);
+    this._mesh = new Mesh(this._shape, this._material);
+    this._mesh.rotateY(Math.PI / 7);
+  }
 
-    this.mesh.position.set(20, 2, -15);
+  get mesh() {
+    return this._mesh;
+  }
 
-    return Promise.resolve();
+  set mesh(_) {
+    throw new Error();
   }
 
   update(time: number): void {
     this._material.uniforms['iTime'].value += time;
+  }
+
+  dispose() {
+    this.mesh.removeFromParent();
   }
 }

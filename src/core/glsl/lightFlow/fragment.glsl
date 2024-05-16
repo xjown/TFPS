@@ -53,11 +53,12 @@
 			vec2 pos = vUv.xy;
 			pos.y -= iTime * 0.3125;
 			
-			vec4 brighterColor = vec4(1.0, 0.65, 0.1, 1.0);
-			vec4 darkerColor = vec4(1.0, 0.0, 0.1, 0.0);
+			vec4 brighterColor = vec4(0.1294, 0.3922, 0.3725, 0.99);
+			vec4 darkerColor = vec4(0.9804, 1.0, 0.9961, 0.0);
 			vec4 middleColor = mix(brighterColor, darkerColor, 0.5);
 
-			float noiseTexel = pnoise(pos, 10.0, 5, 0.5);
+			// pos,10.0,5,0.5 
+			float noiseTexel = pnoise(pos, 1.0, 5, 0.5);
 			
 			float firstStep = smoothstep(0.0, noiseTexel, gradient);
 			float darkerColorStep = smoothstep(0.0, noiseTexel, gradient - gradientStep);
