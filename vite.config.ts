@@ -13,6 +13,9 @@ for (let i in Three) {
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/pavilion/',
+  server: {
+    port: 5175,
+  },
   resolve: {
     alias: {
       '~': resolve(__dirname, './'),

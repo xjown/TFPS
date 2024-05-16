@@ -10,6 +10,15 @@ export const CHARACTER_URL = new URL(
   import.meta.url
 ).href;
 
+export const LIGHT_FLOW_TEXTURE = new URL(
+  '../assets/images/linearGradient.png',
+  import.meta.url
+).href;
+
+export const GUN = new URL('../assets/ak47/gun.glb', import.meta.url).href;
+export const GUN_HAND = new URL('../assets/ak47/ak47.glb', import.meta.url)
+  .href;
+
 export const CHARACTER_WALK_URL = new URL(
   '../assets/animates/Walking_31_k50.fbx',
   import.meta.url
