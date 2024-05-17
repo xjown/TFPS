@@ -26,7 +26,7 @@ export default class Man extends Character {
     this.mass = 1;
 
     this.size.x = 2;
-    this.size.y = 8;
+    this.size.y = 6;
     this.size.z = 1;
   }
 

@@ -1,4 +1,4 @@
-import { Ammo } from '@/core/ammo';
+import { Ammo, AmmoHelper } from '@/core/ammo';
 import Component from '@/core/Component';
 
 import type PlayControl from './PlayControl';
@@ -48,6 +48,12 @@ export default class PlayPhysics extends Component {
       localInertia
     );
     this.body = new Ammo.btRigidBody(bodyInfo);
+
+    this.body.setFriction(0);
+    this.body.setCollisionFlags(
+      this.body.getCollisionFlags() | AmmoHelper.CF_CHARACTER_OBJECT
+    );
+
     this.physicsWorld.addRigidBody(this.body);
   }
 }

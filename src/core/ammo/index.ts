@@ -3,7 +3,7 @@ import Ammo from 'ammo.js';
 import { Object3D } from 'three';
 
 class AmmoHelper {
-  static collisionGroup = {
+  static collisionFilterGroup = {
     // 00000001
     DefaultFilter: 1,
     // 00000010
@@ -19,9 +19,17 @@ class AmmoHelper {
     // 11111111
     AllFilter: -1,
   };
+
+  // 物体不会移动,但会对其他物体施加力。
   static CF_STATIC_OBJECT: number = 1;
+
+  // 将物体标记为运动学物体，运动学物体由用户代码移动，而不是由物理引擎模拟。
   static CF_KINEMATIC_OBJECT: number = 2;
+
+  // 物体本身不受碰撞影响，不会产生移动、旋转等物理响应。但它仍能检测和报告与其他物体的碰撞。
   static CF_NO_CONTACT_RESPONSE: number = 4;
+
+  // 将物体标记为角色对象，可以用于角色控制器。
   static CF_CHARACTER_OBJECT: number = 16;
 
   static init(callback = () => {}) {
@@ -58,10 +66,8 @@ class AmmoHelper {
     const ghostObj = new Ammo.btPairCachingGhostObject();
     ghostObj.setCollisionShape(shape);
     ghostObj.setWorldTransform(transform);
-
-    // ghostObj.setCollisionFlags(Ammo.btBroadphaseProxy.CF_NO_CONTACT_RESPONSE);
-
-    console.log(Ammo.btCollisionObject.CF_NO_CONTACT_RESPONSE);
+    // 物体本身不参与碰撞反应
+    ghostObj.setCollisionFlags(this.CF_NO_CONTACT_RESPONSE);
 
     return ghostObj;
   }

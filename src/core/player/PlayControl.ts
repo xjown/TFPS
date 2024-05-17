@@ -94,15 +94,55 @@ export default class PlayControl extends Component {
     this._instance.scene.add(this._player);
   }
 
-  physicsUpdate(): void {
+  physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number): void {
     const ms = this._body.getMotionState();
     if (ms) {
       const transform = new Ammo.btTransform();
       ms.getWorldTransform(transform);
+
+      // 调整摄像机
+      const cameraDistance = new Vector3().subVectors(
+        new Vector3(
+          transform.getOrigin().x(),
+          transform.getOrigin().y(),
+          transform.getOrigin().z()
+        ),
+        this._instance.orbit_controls.target
+      );
+
+      // const cameraDistance = new Vector3().subVectors(
+      //   this.position,
+      //   this._instance.orbit_controls.target
+      // );
+
+      this._instance.orbit_controls.target.copy(
+        new Vector3(
+          transform.getOrigin().x(),
+          transform.getOrigin().y(),
+          transform.getOrigin().z()
+        )
+      );
+
+      // this._instance.orbit_controls.target.copy(this.position);
+
+      this._updateAction(timeStep, {
+        x: transform.getOrigin().x(),
+        y: transform.getOrigin().y(),
+        z: transform.getOrigin().z(),
+      });
+
+      this._instance.camera.position.add(cameraDistance);
+      this._instance.camera.updateMatrix();
     }
   }
 
   update(time: number) {
+    this.position.set(
+      this._player.position.x,
+      this._player.position.y,
+      this._player.position.z
+    );
+
     if ((this._worldEntity as World).getCollision().collisions) {
       this._checkCollision(time);
       this._updatePlayer(time);
@@ -111,22 +151,16 @@ export default class PlayControl extends Component {
     this._checkFalling();
 
     // action
-    this._updateAction(time);
+    // this._updateAction(time);
 
-    // 调整摄像机
-    const cameraDistance = new Vector3().subVectors(
-      this._player.position,
-      this._instance.orbit_controls.target
-    );
-    this._instance.orbit_controls.target.copy(this._player.position);
-    this._instance.camera.position.add(cameraDistance);
-    this._instance.camera.updateMatrix();
-
-    this.position.set(
-      this._player.position.x,
-      this._player.position.y,
-      this._player.position.z
-    );
+    // // 调整摄像机
+    // const cameraDistance = new Vector3().subVectors(
+    //   this._player.position,
+    //   this._instance.orbit_controls.target
+    // );
+    // this._instance.orbit_controls.target.copy(this._player.position);
+    // this._instance.camera.position.add(cameraDistance);
+    // this._instance.camera.updateMatrix();
   }
 
   private _checkFalling() {
@@ -147,23 +181,28 @@ export default class PlayControl extends Component {
 
     if (this._event.downDowning.KeyW) {
       rotation.set(0, 0, -1).applyAxisAngle(new Vector3(0, 1, 0), angle);
-      this._player.position.addScaledVector(rotation, this._speed * time);
     }
-
     if (this._event.downDowning.KeyS) {
       rotation.set(0, 0, 1).applyAxisAngle(new Vector3(0, 1, 0), angle);
-      this._player.position.addScaledVector(rotation, this._speed * time);
     }
-
     if (this._event.downDowning.KeyA) {
       rotation.set(-1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle);
-      this._player.position.addScaledVector(rotation, this._speed * time);
     }
-
     if (this._event.downDowning.KeyD) {
       rotation.set(1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle);
-      this._player.position.addScaledVector(rotation, this._speed * time);
     }
+
+    const currentPos = rotation.clone().multiplyScalar(this._speed);
+
+    const physicsPos = new Ammo.btVector3(
+      currentPos.x,
+      currentPos.y,
+      currentPos.z
+    );
+    this._body.setLinearVelocity(physicsPos);
+    this._body.setAngularVelocity(new Ammo.btVector3(0, angle, 0));
+
+    this._player.position.addScaledVector(rotation, this._speed * time);
 
     //此处必须更新。默认为自动更新，但是会慢一拍。如果不更新会导致计算距离不准确
     // 详情 _checkCollision()方法 => moveStance变量
@@ -272,7 +311,7 @@ export default class PlayControl extends Component {
     this._player.updateMatrixWorld();
   }
 
-  _updateAction(time: number) {
+  _updateAction(time: number, pos: { x: number; y: number; z: number }) {
     let angle: number = Math.PI;
     let nextAction: string = '';
     const cameraAngle = this._instance.orbit_controls.getAzimuthalAngle();
@@ -311,12 +350,16 @@ export default class PlayControl extends Component {
 
     characterAngle.setFromAxisAngle(new Vector3(0, 1, 0), cameraAngle + angle);
     this.character.person.quaternion.slerp(characterAngle, 0.2);
-    this.character.person.position
-      .applyMatrix4(this._player.matrixWorld)
-      .copy(this._player.position.clone());
+    // this.character.person.position
+    //   .applyMatrix4(this._player.matrixWorld)
+    //   .copy(this._player.position.clone());
+
+    this.character.person.position.set(pos.x, pos.y, pos.z);
+
     this.character.person.translateY(-4);
 
     this._currentAction = nextAction;
+
     this._mixer.update(time);
   }
 }

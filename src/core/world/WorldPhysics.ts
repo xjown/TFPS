@@ -52,6 +52,7 @@ export default class WorldPhysics extends Component {
       localInertia
     );
     const body = new Ammo.btRigidBody(bodyInfo);
+    // body.setFriction(0);
     this.physicsWorld.addRigidBody(body);
   }
 }
