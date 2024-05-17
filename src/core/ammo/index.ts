@@ -3,11 +3,67 @@ import Ammo from 'ammo.js';
 import { Object3D } from 'three';
 
 class AmmoHelper {
+  static collisionGroup = {
+    // 00000001
+    DefaultFilter: 1,
+    // 00000010
+    StaticFilter: 2,
+    // 00000100
+    KinematicFilter: 4,
+    // 00001000
+    DebrisFilter: 8,
+    // 00010000
+    SensorTrigger: 16,
+    // 00100000
+    CharacterFilter: 32,
+    // 11111111
+    AllFilter: -1,
+  };
+  static CF_STATIC_OBJECT: number = 1;
+  static CF_KINEMATIC_OBJECT: number = 2;
+  static CF_NO_CONTACT_RESPONSE: number = 4;
+  static CF_CHARACTER_OBJECT: number = 16;
+
   static init(callback = () => {}) {
     // @ts-ignore
     Ammo.bind(Ammo)(Ammo).then(() => {
       callback();
     });
+  }
+
+  /**
+   * 不参与模拟
+   * @param shape
+   * @param position
+   * @param angle
+   * @returns
+   */
+  static createGhostBody(
+    shape: Ammo.btCollisionShape,
+    position: { x: number; y: number; z: number } = { x: 0, y: 0, z: 0 },
+    angle: { x: number; y: number; z: number; w: number } = {
+      x: 0,
+      y: 0,
+      z: 0,
+      w: 1,
+    }
+  ) {
+    const transform = new Ammo.btTransform();
+    transform.setIdentity();
+    transform.setOrigin(new Ammo.btVector3(position.x, position.y, position.z));
+    transform.setRotation(
+      new Ammo.btQuaternion(angle.x, angle.y, angle.z, angle.w)
+    );
+
+    const ghostObj = new Ammo.btPairCachingGhostObject();
+    ghostObj.setCollisionShape(shape);
+    ghostObj.setWorldTransform(transform);
+
+    // ghostObj.setCollisionFlags(Ammo.btBroadphaseProxy.CF_NO_CONTACT_RESPONSE);
+
+    console.log(Ammo.btCollisionObject.CF_NO_CONTACT_RESPONSE);
+
+    return ghostObj;
   }
 
   /**

@@ -12,13 +12,14 @@ export default class World extends Component {
   private _instance: Core;
   private _loader: Loader;
   private _effect!: LightFlowWall;
-  private _ak = {
+  private _weapon!: Object3D;
+
+  public name: string = 'world';
+  public collision: Collision;
+  public ak = {
     position: { x: 20, y: 5, z: -15 },
     size: { radius: 2.5, height: 5.2 },
   };
-  private _weapon!: Object3D;
-  public name: string = 'world';
-  public collision: Collision;
 
   constructor(instance: Core) {
     super();
@@ -28,11 +29,8 @@ export default class World extends Component {
   }
 
   initialize() {
-    this._effect = new LightFlowWall(
-      this._ak.size.radius,
-      this._ak.size.height
-    );
-    this._effect.mesh.position.set(this._ak.position.x, 2, this._ak.position.z);
+    this._effect = new LightFlowWall(this.ak.size.radius, this.ak.size.height);
+    this._effect.mesh.position.set(this.ak.position.x, 2, this.ak.position.z);
     this._instance.scene.add(this._effect.mesh);
   }
 
@@ -61,9 +59,9 @@ export default class World extends Component {
     }, 1000);
 
     this._weapon.position.set(
-      this._ak.position.x,
-      this._ak.position.y,
-      this._ak.position.z
+      this.ak.position.x,
+      this.ak.position.y,
+      this.ak.position.z
     );
     this._weapon.scale.set(0.6, 0.6, 0.6);
 
