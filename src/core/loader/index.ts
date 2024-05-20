@@ -12,11 +12,13 @@ export default class Loader {
   private _gltfHandle: GLTFLoader;
   private _fbxhandle: FBXLoader;
   private _textureHandle: TextureLoader;
+  private _audioHandle: AudioLoader;
   constructor() {
     this._loadOnprogress();
     this._fbxhandle = new FBXLoader();
     this._gltfHandle = new GLTFLoader();
     this._textureHandle = new TextureLoader();
+    this._audioHandle = new AudioLoader();
   }
 
   async loadGLTF(url: string) {
@@ -25,6 +27,10 @@ export default class Loader {
 
   async loadFBX(url: string): Promise<Object3D> {
     return this._fbxhandle.loadAsync(url);
+  }
+
+  async loadAudio(url: string) {
+    return this._audioHandle.loadAsync(url);
   }
 
   async loadTexture(url: string) {

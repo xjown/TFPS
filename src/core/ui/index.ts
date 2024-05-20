@@ -34,11 +34,11 @@ export default class UI extends Component {
     const el = document.querySelector<HTMLElement>('.weapon')!;
     this.mask = visible;
     this.tip = visible;
-    el.style.display = visible ? 'flex' : 'none';
+    el.style.display = visible ? 'block' : 'none';
   }
   get weaponTip() {
     const el = document.querySelector<HTMLElement>('.weapon')!;
-    return el.style.display === 'flex';
+    return el.style.display === 'block';
   }
 
   set mask(visible: boolean) {

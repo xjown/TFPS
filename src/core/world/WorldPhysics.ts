@@ -7,10 +7,10 @@ import type UI from '../ui';
 
 export default class WorldPhysics extends Component {
   private _world!: World;
-  private _physicsBody!: Ammo.btGhostObject;
   private _playPhysics!: PlayPhysics;
   private _ui!: UI;
 
+  public weaponPhysics!: Ammo.btGhostObject;
   public name: string = 'worldPhysics';
   public physicsWorld: Ammo.btDiscreteDynamicsWorld;
 
@@ -27,7 +27,7 @@ export default class WorldPhysics extends Component {
     this._ui = this.FindEntity('ui')!.getComponent('ui') as UI;
 
     // weapon
-    this._physicsBody = AmmoHelper.createGhostBody(
+    this.weaponPhysics = AmmoHelper.createGhostBody(
       new Ammo.btCylinderShape(
         new Ammo.btVector3(
           this._world.ak.size.radius,
@@ -43,7 +43,7 @@ export default class WorldPhysics extends Component {
     );
 
     this.physicsWorld.addCollisionObject(
-      this._physicsBody,
+      this.weaponPhysics,
       AmmoHelper.collisionFilterGroup.SensorTrigger
     );
 
@@ -70,15 +70,16 @@ export default class WorldPhysics extends Component {
     this.physicsWorld.addRigidBody(body);
   }
 
-  physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number): void {
-    this._ui.weaponTip = false;
+  physicsUpdate(): void {
     if (
       AmmoHelper.IsTriggerOverlapping(
-        this._physicsBody,
+        this.weaponPhysics,
         this._playPhysics.body!
       )
     ) {
-      this._ui.weaponTip = true;
+      if (!this._ui.weaponTip) this._ui.weaponTip = true;
+    } else {
+      if (this._ui.weaponTip) this._ui.weaponTip = false;
     }
   }
 }

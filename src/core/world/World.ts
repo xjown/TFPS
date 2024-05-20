@@ -77,8 +77,5 @@ export default class World extends Component {
   update(time: number) {
     this._effect.update(time);
     this._weapon.rotation.y += 0.005;
-
-    // debug
-    // this._instance.scene.add(this.collision.collisionsHelper);
   }
 }

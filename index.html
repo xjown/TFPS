@@ -28,26 +28,30 @@
         display: none;
       }
       #tips {
-        padding: 10px;
         z-index: 3;
         cursor: pointer;
         display: none;
       }
       .weapon {
+        display: none;
+      }
+      .weapon-gun {
         display: flex;
         color: #fff;
         font-size: 12px;
         align-items: center;
-        display: none;
+        border-radius: 3%;
+        padding: 10px;
+        border-bottom: solid 1px #2f2f2f;
       }
-      .weapon:hover {
+      .weapon-gun:hover {
         background-color: rgb(255, 230, 0);
         color: #000;
       }
-      .weapon div {
+      .weapon-gun div {
         margin: 0 5px;
       }
-      .weapon-left {
+      .weapon-gun_left {
         width: 50px;
         height: 50px;
         background-color: #585858;
@@ -56,12 +60,15 @@
         text-align: center;
         font-size: 30px;
       }
-      .weapon-right > p {
+      .weapon-gun_right > p {
         margin: 0;
         font-size: 10px;
+        line-height: 1.5;
+        letter-spacing: 1px;
       }
-      .weapon-right > p:first-child {
+      .weapon-gun_right > p:first-child {
         font-size: 16px;
+        font-weight: bold;
       }
     </style>
   </head>
@@ -69,11 +76,21 @@
     <div id="mask">
       <div id="tips">
         <div class="weapon">
-          <div class="weapon-left">F</div>
-          <div class="weapon-right">
-            <p>AK47</p>
-            <p>♾️/30</p>
-            <p>按F键或点击拾取</p>
+          <div class="weapon-gun">
+            <div class="weapon-gun_left">F</div>
+            <div class="weapon-gun_right">
+              <p>AK47</p>
+              <p>按F键或点击拾取</p>
+            </div>
+          </div>
+          <div class="weapon-gun">
+            <div class="weapon-gun_left">
+              <img src="./public/7.62.png" height="50%" width="60%" />
+            </div>
+            <div class="weapon-gun_right">
+              <p>7.62毫米</p>
+              <p>30 / ♾️</p>
+            </div>
           </div>
         </div>
       </div>

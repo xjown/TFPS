@@ -3,7 +3,9 @@ import { ACTION_EVENT_NAME, KEY_CODE } from '@/configs';
 import Component from '@/core/Component';
 import { Man } from '../character';
 import { Ammo } from '@/core/ammo';
+import Weapon from './Weapon';
 
+import UI from '../ui';
 import type Core from '../index';
 import type ActionEvent from '../events/action';
 import type Collision from '../collision';
@@ -37,6 +39,8 @@ export default class PlayControl extends Component {
   private _worldEntity!: World;
   private _body!: Ammo.btRigidBody;
   private _physicsWorld!: PlayPhysics;
+  private _weapon: Weapon;
+  private _ui!: UI;
 
   public position: Vector3Type;
   public character: Man;
@@ -54,12 +58,14 @@ export default class PlayControl extends Component {
     this._currentAction = 'idle';
     this._downDistance = new Vector3(0, 0, 0);
     this._onFloor = true;
+    this._weapon = new Weapon(instance, this._event);
 
     // default Character
     this.character = new Man();
   }
 
   initialize() {
+    this._ui = this.FindEntity('ui')?.getComponent('ui') as UI;
     this._physicsWorld = this.getComponent('playPhysics')! as PlayPhysics;
     this._worldEntity = this.FindEntity('world')?.getComponent(
       'world'
@@ -73,7 +79,12 @@ export default class PlayControl extends Component {
 
   async load() {
     const model = await this.character.load();
+    const { ak_scene, flash_scene } = await this._weapon.load();
+
     this._instance.scene.add(model);
+    this._instance.scene.add(ak_scene);
+    this._instance.scene.add(flash_scene);
+
     return model;
   }
 

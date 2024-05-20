@@ -18,6 +18,14 @@ export const LIGHT_FLOW_TEXTURE = new URL(
 export const GUN = new URL('../assets/ak47/gun.glb', import.meta.url).href;
 export const GUN_HAND = new URL('../assets/ak47/ak47.glb', import.meta.url)
   .href;
+export const GUN_FLASH = new URL(
+  '../assets/ak47/muzzle_flash.glb',
+  import.meta.url
+).href;
+export const GUN_SOUND = new URL(
+  '../assets/sounds/ak47_shot.wav',
+  import.meta.url
+).href;
 
 export const CHARACTER_WALK_URL = new URL(
   '../assets/animates/Walking_31_k50.fbx',

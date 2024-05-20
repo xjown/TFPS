@@ -1,4 +1,5 @@
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { AudioListener } from 'three';
 
 import Events from './events';
 import { STATIC_LOADED, UI_EVENT_NAME } from '@/configs';
@@ -30,6 +31,7 @@ export default class Core {
   world: World;
   physicsWorld!: Ammo.btDiscreteDynamicsWorld;
   entityCollection!: EntityCollection;
+  listen: AudioListener;
 
   constructor() {
     this.scene = new Scene();
@@ -40,6 +42,7 @@ export default class Core {
       this.camera,
       this.renderer.domElement
     );
+    this.listen = new AudioListener();
     Events.getStance().init();
     this.world = new World(this);
     AmmoHelper.init(() => this._init());
@@ -104,10 +107,13 @@ export default class Core {
     this.renderer.toneMapping = ACESFilmicToneMapping;
     this.renderer.shadowMap.enabled = true;
     this.renderer.outputColorSpace = SRGBColorSpace;
-    this.camera.position.set(0, 0, 1);
+
     this.orbit_controls.dampingFactor = 0.2;
     this.orbit_controls.enableZoom = false;
     this.orbit_controls.enablePan = false;
+
+    this.camera.position.set(0, 0, 1);
+    this.camera.add(this.listen);
 
     this._RenderRespect();
 
