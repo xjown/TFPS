@@ -1,20 +1,23 @@
-import { KEY_CODE, UI_POSITION_CONTROL } from '@/configs';
+import { KEY_CODE } from '@/configs';
 import nipplejs from 'nipplejs';
 
-export type VisibleModeType = 'pc' | 'mobile';
 export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
 
 export default class ActionEvent extends EventDispatcher<{
   [KEY_CODE]: { message: { code: string } };
 }> {
-  mode: VisibleModeType = 'pc';
   downDowning: { [key in allowKeyDownType]: boolean } = {
     KeyW: false,
     KeyA: false,
     KeyD: false,
     KeyS: false,
   };
-  private _allowKeyDown: string[] = ['KeyW', 'KeyS', 'KeyA', 'KeyD'];
+  private _allowKeyDown: allowKeyDownType[] = [
+    'KeyW',
+    'KeyS',
+    'KeyA',
+    'KeyD',
+  ] as const;
 
   constructor() {
     super();
@@ -22,9 +25,7 @@ export default class ActionEvent extends EventDispatcher<{
 
   bindEvent(controlHandle: HTMLElement) {
     if ('ontouchstart' in window) {
-      this.mode = 'mobile';
     } else {
-      this.mode = 'pc';
       window.addEventListener('keydown', this._keydown.bind(this));
       window.addEventListener('keyup', this._keyup.bind(this));
     }
@@ -62,20 +63,26 @@ export default class ActionEvent extends EventDispatcher<{
   }
 
   private _resetKey() {
-    this.downDowning['KeyD'] = false;
-    this.downDowning['KeyA'] = false;
-    this.downDowning['KeyW'] = false;
-    this.downDowning['KeyS'] = false;
+    let i: allowKeyDownType;
+    for (i of this._allowKeyDown) {
+      this.downDowning[i] = false;
+    }
   }
+
   private _keyup(event: KeyboardEvent) {
     const { code } = event;
-    if (this._allowKeyDown.includes(code)) {
+    if (
+      this._allowKeyDown.includes(code as (typeof this._allowKeyDown)[number])
+    ) {
       this.downDowning[code as allowKeyDownType] = false;
     }
   }
+
   private _keydown(event: KeyboardEvent) {
     const { code } = event;
-    if (this._allowKeyDown.includes(code)) {
+    if (
+      this._allowKeyDown.includes(code as (typeof this._allowKeyDown)[number])
+    ) {
       this.downDowning[code as allowKeyDownType] = true;
     } else {
       this.actionEvent(code);

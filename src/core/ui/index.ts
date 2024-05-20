@@ -20,7 +20,9 @@ export default class UI extends Component {
   constructor() {
     super();
     this._event = Events.getStance().getEvent(UI_EVENT_NAME);
-    this._actionEvent = Events.getStance().getEvent(ACTION_EVENT_NAME);
+    this._actionEvent = Events.getStance().getEvent(
+      ACTION_EVENT_NAME
+    ) as ActionEvent;
     this._loadingHandle = document.getElementById('loading')!;
     this._manageLoad();
     this._loadingOff();

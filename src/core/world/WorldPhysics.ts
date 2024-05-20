@@ -9,7 +9,8 @@ export default class WorldPhysics extends Component {
   private _world!: World;
   private _physicsBody!: Ammo.btGhostObject;
   private _playPhysics!: PlayPhysics;
-  private _ui: UI;
+  private _ui!: UI;
+
   public name: string = 'worldPhysics';
   public physicsWorld: Ammo.btDiscreteDynamicsWorld;
 
@@ -71,7 +72,6 @@ export default class WorldPhysics extends Component {
 
   physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number): void {
     this._ui.weaponTip(false);
-
     if (
       AmmoHelper.IsTriggerOverlapping(
         this._physicsBody,
