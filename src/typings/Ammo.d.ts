@@ -1,5 +1,6 @@
 declare function Ammo<T>(target?: T): Promise<T & typeof Ammo>;
 declare module 'ammo.js' {
+  function castObject<T = unknown>(obj: unknown, type: T): never;
   function addFunction(fn: btInternalTickCallback): () => {};
   function destroy(obj: any): void;
   class btIDebugDraw {

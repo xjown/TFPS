@@ -19,9 +19,65 @@
         height: 100%;
         width: 100%;
       }
+      #mask {
+        background-color: black;
+        position: fixed;
+        z-index: 2;
+        opacity: 0.55;
+        border-radius: 3%;
+        display: none;
+      }
+      #tips {
+        padding: 10px;
+        z-index: 3;
+        cursor: pointer;
+        display: none;
+      }
+      .weapon {
+        display: flex;
+        color: #fff;
+        font-size: 12px;
+        align-items: center;
+        display: none;
+      }
+      .weapon:hover {
+        background-color: rgb(255, 230, 0);
+        color: #000;
+      }
+      .weapon div {
+        margin: 0 5px;
+      }
+      .weapon-left {
+        width: 50px;
+        height: 50px;
+        background-color: #585858;
+        border-radius: 3%;
+        line-height: 50px;
+        text-align: center;
+        font-size: 30px;
+      }
+      .weapon-right > p {
+        margin: 0;
+        font-size: 10px;
+      }
+      .weapon-right > p:first-child {
+        font-size: 16px;
+      }
     </style>
   </head>
   <body>
+    <div id="mask">
+      <div id="tips">
+        <div class="weapon">
+          <div class="weapon-left">F</div>
+          <div class="weapon-right">
+            <p>AK47</p>
+            <p>♾️/30</p>
+            <p>按F键或点击拾取</p>
+          </div>
+        </div>
+      </div>
+    </div>
     <div id="app">
       <div id="loading">
         <style>

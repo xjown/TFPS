@@ -59,17 +59,17 @@ export default class Core {
     const uiEntity = new Entity('ui');
     uiEntity.addComponent(new UI());
 
-    // world
-    const worldEntity = new Entity('world');
-    worldEntity.addComponent(new WorldPhysics(this.physicsWorld));
-    worldEntity.addComponent(new World(this));
-    assets.push(worldEntity);
-
     // player
     const playerEntity = new Entity('player');
     playerEntity.addComponent(new PlayPhysics(this.physicsWorld));
     playerEntity.addComponent(new PlayControl(this));
     assets.push(playerEntity);
+
+    // world
+    const worldEntity = new Entity('world');
+    worldEntity.addComponent(new WorldPhysics(this.physicsWorld));
+    worldEntity.addComponent(new World(this));
+    assets.push(worldEntity);
 
     this.entityCollection.addEntity(playerEntity);
     this.entityCollection.addEntity(uiEntity);
@@ -136,11 +136,17 @@ export default class Core {
     );
 
     // 设置重力
-    this.physicsWorld.setGravity(new Ammo.btVector3(0, -10, 0));
+    this.physicsWorld.setGravity(new Ammo.btVector3(0, -9.8, 0));
 
     this.physicsWorld.setInternalTickCallback(
       Ammo.addFunction(this._physicsUpdate.bind(this))
     );
+
+    //  设置幽灵对象碰撞检测
+    this.physicsWorld
+      .getBroadphase()
+      .getOverlappingPairCache()
+      .setInternalGhostPairCallback(new Ammo.btGhostPairCallback());
   }
 
   private _RenderRespect() {

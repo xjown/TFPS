@@ -8,12 +8,13 @@ import { boxHelper } from '@/core/helper';
 import type Core from '../index';
 import type ActionEvent from '../events/action';
 import type Collision from '../collision';
-import type World from '../world';
+import type { World } from '../world';
+import type PlayPhysics from './PlayPhysics';
 import type {
   Box3 as Box3Type,
   Line3 as Line3Type,
   Mesh as MeshType,
-  BoxGeometry as BoxGeometryType,
+  BufferGeometry as BufferGeometryType,
   MeshBasicMaterial as MeshBasicMaterialType,
   Vector3 as Vector3Type,
   AnimationMixer as AnimationMixerType,
@@ -21,7 +22,7 @@ import type {
 
 export default class PlayControl extends Component {
   private _instance: Core;
-  private _player!: MeshType<BoxGeometryType, MeshBasicMaterialType>;
+  private _player!: MeshType<BufferGeometryType, MeshBasicMaterialType>;
   private _speed: number = 6;
   private _basePlayerInfo = {
     radius: 1,
@@ -29,16 +30,16 @@ export default class PlayControl extends Component {
   };
   private _frameBox: Box3Type = new Box3();
   private _frameLine: Line3Type = new Line3();
-  private _onFloor: boolean = false;
+  private _onFloor: boolean = true;
   private _downDistance: Vector3Type = new Vector3(0, 0, 0);
   private _gravity: number = 15;
   private _mixer!: AnimationMixerType;
   private _currentAction: string = 'idle';
   private _maxFalling: number = 15;
   private _event: ActionEvent;
-  private _worldEntity!: Component;
+  private _worldEntity!: World;
   private _body!: Ammo.btRigidBody;
-  private _physicsWorld!: Component;
+  private _physicsWorld!: PlayPhysics;
 
   public position: Vector3Type;
   public character: Man;
@@ -55,11 +56,11 @@ export default class PlayControl extends Component {
   }
 
   initialize() {
-    this._physicsWorld = this.getComponent('playPhysics')!;
+    this._physicsWorld = this.getComponent('playPhysics')! as PlayPhysics;
     this._worldEntity = this.FindEntity('world')?.getComponent(
       'world'
-    ) as Component;
-    this._body = this._physicsWorld.body as Ammo.btRigidBody;
+    ) as World;
+    this._body = this._physicsWorld.body!;
 
     this._createPlayer();
 
@@ -75,10 +76,10 @@ export default class PlayControl extends Component {
 
   _createPlayer() {
     this._player = new Mesh(
-      new BoxGeometry(
-        this.character.size.x,
-        this.character.size.y,
-        this.character.size.z
+      new CylinderGeometry(
+        this.character.size.z,
+        this.character.size.z,
+        this.character.size.y
       ),
       new MeshBasicMaterial({ color: 0x00ff00 })
     );
@@ -89,7 +90,11 @@ export default class PlayControl extends Component {
     this._switchVisual();
 
     this._player.visible = false;
-    this._player.position.set(0, 4, 0);
+    this._player.position.set(
+      this.position.x,
+      this.position.y,
+      this.position.z
+    );
 
     this._instance.scene.add(this._player);
   }
@@ -99,7 +104,7 @@ export default class PlayControl extends Component {
     if (ms) {
       const transform = new Ammo.btTransform();
       ms.getWorldTransform(transform);
-
+      // console.log(transform.getOrigin().y());
       // 调整摄像机
       const cameraDistance = new Vector3().subVectors(
         new Vector3(
@@ -108,6 +113,11 @@ export default class PlayControl extends Component {
           transform.getOrigin().z()
         ),
         this._instance.orbit_controls.target
+      );
+      this._player.position.set(
+        transform.getOrigin().x(),
+        transform.getOrigin().y(),
+        transform.getOrigin().z()
       );
 
       // const cameraDistance = new Vector3().subVectors(
@@ -137,14 +147,14 @@ export default class PlayControl extends Component {
   }
 
   update(time: number) {
-    this.position.set(
-      this._player.position.x,
-      this._player.position.y,
-      this._player.position.z
-    );
+    // this.position.set(
+    //   this._player.position.x,
+    //   this._player.position.y,
+    //   this._player.position.z
+    // );
 
     if ((this._worldEntity as World).getCollision().collisions) {
-      this._checkCollision(time);
+      // this._checkCollision(time);
       this._updatePlayer(time);
     }
 
@@ -175,9 +185,9 @@ export default class PlayControl extends Component {
     const angle = this._instance.orbit_controls.getAzimuthalAngle();
     const rotation = new Vector3(0, 0, 0);
 
-    this._downDistance.y = this._onFloor ? 0 : this._gravity * time * -1;
+    // this._downDistance.y = this._onFloor ? 0 : this._gravity * time * -1;
 
-    this._player.position.add(this._downDistance);
+    // this._player.position.add(this._downDistance);
 
     if (this._event.downDowning.KeyW) {
       rotation.set(0, 0, -1).applyAxisAngle(new Vector3(0, 1, 0), angle);
@@ -202,11 +212,11 @@ export default class PlayControl extends Component {
     this._body.setLinearVelocity(physicsPos);
     this._body.setAngularVelocity(new Ammo.btVector3(0, angle, 0));
 
-    this._player.position.addScaledVector(rotation, this._speed * time);
+    // this._player.position.addScaledVector(rotation, this._speed * time);
 
     //此处必须更新。默认为自动更新，但是会慢一拍。如果不更新会导致计算距离不准确
     // 详情 _checkCollision()方法 => moveStance变量
-    this._player.updateMatrixWorld();
+    // this._player.updateMatrixWorld();
   }
 
   private _switchVisual() {
@@ -354,7 +364,7 @@ export default class PlayControl extends Component {
     //   .applyMatrix4(this._player.matrixWorld)
     //   .copy(this._player.position.clone());
 
-    this.character.person.position.set(pos.x, pos.y, pos.z);
+    this.character.person.position.set(pos.x, pos.y + 1, pos.z);
 
     this.character.person.translateY(-4);
 

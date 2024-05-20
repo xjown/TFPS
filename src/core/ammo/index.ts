@@ -5,17 +5,17 @@ import { Object3D } from 'three';
 class AmmoHelper {
   static collisionFilterGroup = {
     // 00000001
-    DefaultFilter: 1,
+    DefaultFilter: 1 << 0,
     // 00000010
-    StaticFilter: 2,
+    StaticFilter: 1 << 1,
     // 00000100
-    KinematicFilter: 4,
+    KinematicFilter: 1 << 2,
     // 00001000
-    DebrisFilter: 8,
+    DebrisFilter: 1 << 3,
     // 00010000
-    SensorTrigger: 16,
+    SensorTrigger: 1 << 4,
     // 00100000
-    CharacterFilter: 32,
+    CharacterFilter: 1 << 5,
     // 11111111
     AllFilter: -1,
   };
@@ -70,6 +70,21 @@ class AmmoHelper {
     ghostObj.setCollisionFlags(this.CF_NO_CONTACT_RESPONSE);
 
     return ghostObj;
+  }
+
+  static IsTriggerOverlapping(
+    ghostObj: Ammo.btGhostObject,
+    rigidBody: Ammo.btRigidBody
+  ) {
+    for (let i = 0; i < ghostObj.getNumOverlappingObjects(); i++) {
+      const body = Ammo.castObject<typeof Ammo.btRigidBody>(
+        ghostObj.getOverlappingObject(i),
+        Ammo.btRigidBody
+      );
+      if (body === rigidBody) return true;
+    }
+
+    return false;
   }
 
   /**

@@ -18,7 +18,7 @@ export default class World extends Component {
   public collision: Collision;
   public ak = {
     position: { x: 20, y: 5, z: -15 },
-    size: { radius: 2.5, height: 5.2 },
+    size: { radius: 2.5, height: 10 },
   };
 
   constructor(instance: Core) {
@@ -43,7 +43,7 @@ export default class World extends Component {
         item.castShadow = true;
       }
       if (item.name.includes('Light')) {
-        item.intensity *= 1000;
+        item.intensity *= 800;
       }
       if (item.name === 'home002') {
         item.castShadow = true;

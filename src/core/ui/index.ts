@@ -28,6 +28,23 @@ export default class UI extends Component {
 
   initialize() {}
 
+  weaponTip(visible: boolean) {
+    const el = document.querySelector('.weapon')!;
+    this.mask(visible);
+    this.tip(visible);
+    el.style.display = visible ? 'flex' : 'none';
+  }
+
+  mask(visible: boolean) {
+    const el = document.querySelector('#mask')!;
+    el.style.display = visible ? 'block' : 'none';
+  }
+
+  tip(visible: boolean) {
+    const el = document.querySelector('#tips')!;
+    el.style.display = visible ? 'block' : 'none';
+  }
+
   _loadingOff() {
     this._event.addEventListener(STATIC_LOADED, () => {
       const controlHandle = this._createControl();
