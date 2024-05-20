@@ -71,14 +71,14 @@ export default class WorldPhysics extends Component {
   }
 
   physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number): void {
-    this._ui.weaponTip(false);
+    this._ui.weaponTip = false;
     if (
       AmmoHelper.IsTriggerOverlapping(
         this._physicsBody,
         this._playPhysics.body!
       )
     ) {
-      this._ui.weaponTip(true);
+      this._ui.weaponTip = true;
     }
   }
 }

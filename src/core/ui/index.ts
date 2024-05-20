@@ -30,21 +30,33 @@ export default class UI extends Component {
 
   initialize() {}
 
-  weaponTip(visible: boolean) {
-    const el = document.querySelector('.weapon')!;
-    this.mask(visible);
-    this.tip(visible);
+  set weaponTip(visible: boolean) {
+    const el = document.querySelector<HTMLElement>('.weapon')!;
+    this.mask = visible;
+    this.tip = visible;
     el.style.display = visible ? 'flex' : 'none';
   }
-
-  mask(visible: boolean) {
-    const el = document.querySelector('#mask')!;
-    el.style.display = visible ? 'block' : 'none';
+  get weaponTip() {
+    const el = document.querySelector<HTMLElement>('.weapon')!;
+    return el.style.display === 'flex';
   }
 
-  tip(visible: boolean) {
-    const el = document.querySelector('#tips')!;
+  set mask(visible: boolean) {
+    const el = document.querySelector<HTMLElement>('#mask')!;
     el.style.display = visible ? 'block' : 'none';
+  }
+  get mask() {
+    const el = document.querySelector<HTMLElement>('#mask')!;
+    return el.style.display === 'block';
+  }
+
+  set tip(visible: boolean) {
+    const el = document.querySelector<HTMLElement>('#tips')!;
+    el.style.display = visible ? 'block' : 'none';
+  }
+  get tip() {
+    const el = document.querySelector<HTMLElement>('#tips')!;
+    return el.style.display === 'block';
   }
 
   _loadingOff() {

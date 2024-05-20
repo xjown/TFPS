@@ -3,7 +3,6 @@ import { ACTION_EVENT_NAME, KEY_CODE } from '@/configs';
 import Component from '@/core/Component';
 import { Man } from '../character';
 import { Ammo } from '@/core/ammo';
-import { boxHelper } from '@/core/helper';
 
 import type Core from '../index';
 import type ActionEvent from '../events/action';
@@ -23,19 +22,17 @@ import type {
 export default class PlayControl extends Component {
   private _instance: Core;
   private _player!: MeshType<BufferGeometryType, MeshBasicMaterialType>;
-  private _speed: number = 6;
+  private _speed: number;
   private _basePlayerInfo = {
     radius: 1,
     firstPerson: true,
   };
-  private _frameBox: Box3Type = new Box3();
-  private _frameLine: Line3Type = new Line3();
-  private _onFloor: boolean = true;
-  private _downDistance: Vector3Type = new Vector3(0, 0, 0);
-  private _gravity: number = 15;
+  private _frameBox: Box3Type;
+  private _frameLine: Line3Type;
+  private _onFloor: boolean;
+  private _downDistance: Vector3Type;
   private _mixer!: AnimationMixerType;
-  private _currentAction: string = 'idle';
-  private _maxFalling: number = 15;
+  private _currentAction: string;
   private _event: ActionEvent;
   private _worldEntity!: World;
   private _body!: Ammo.btRigidBody;
@@ -43,13 +40,20 @@ export default class PlayControl extends Component {
 
   public position: Vector3Type;
   public character: Man;
-  public name: string = 'playControl';
+  public name: string;
 
   constructor(instance: Core) {
     super();
+    this.name = 'playControl';
     this._instance = instance;
     this._event = Events.getStance().getEvent(ACTION_EVENT_NAME) as ActionEvent;
     this.position = new Vector3(0, 0, 0);
+    this._frameBox = new Box3();
+    this._frameLine = new Line3();
+    this._speed = 6;
+    this._currentAction = 'idle';
+    this._downDistance = new Vector3(0, 0, 0);
+    this._onFloor = true;
 
     // default Character
     this.character = new Man();
@@ -63,9 +67,8 @@ export default class PlayControl extends Component {
     this._body = this._physicsWorld.body!;
 
     this._createPlayer();
-
-    // 处理事件
-    this._playerOtherAction();
+    this._setupEvents();
+    this._switchVisual();
   }
 
   async load() {
@@ -87,8 +90,6 @@ export default class PlayControl extends Component {
     this._mixer = new AnimationMixer(this.character.person);
     this._mixer.clipAction(this.character.actions['idle']).play();
 
-    this._switchVisual();
-
     this._player.visible = false;
     this._player.position.set(
       this.position.x,
@@ -99,12 +100,29 @@ export default class PlayControl extends Component {
     this._instance.scene.add(this._player);
   }
 
+  private _setupEvents() {
+    this._event.addEventListener(KEY_CODE, ({ message }) => {
+      const { code, event } = message;
+      if (event && event.repeat) return;
+      switch (code) {
+        case 'Space':
+          if (this._onFloor) {
+            this._player.position.y += 5;
+            this._onFloor = false;
+          }
+          break;
+        case 'KeyV':
+          this._switchVisual();
+          break;
+      }
+    });
+  }
+
   physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number): void {
     const ms = this._body.getMotionState();
     if (ms) {
       const transform = new Ammo.btTransform();
       ms.getWorldTransform(transform);
-      // console.log(transform.getOrigin().y());
       // 调整摄像机
       const cameraDistance = new Vector3().subVectors(
         new Vector3(
@@ -158,8 +176,6 @@ export default class PlayControl extends Component {
       this._updatePlayer(time);
     }
 
-    this._checkFalling();
-
     // action
     // this._updateAction(time);
 
@@ -172,14 +188,6 @@ export default class PlayControl extends Component {
     // this._instance.camera.position.add(cameraDistance);
     // this._instance.camera.updateMatrix();
   }
-
-  private _checkFalling() {
-    if (this._player.position.y >= this._maxFalling) {
-      this.reset();
-    }
-  }
-
-  reset() {}
 
   private _updatePlayer(time: number) {
     const angle = this._instance.orbit_controls.getAzimuthalAngle();
@@ -246,23 +254,6 @@ export default class PlayControl extends Component {
     this._basePlayerInfo.firstPerson = !this._basePlayerInfo.firstPerson;
   }
 
-  private _playerOtherAction() {
-    this._event.addEventListener(KEY_CODE, ({ message }) => {
-      const { code, repeat } = message;
-      if (repeat) return;
-      switch (code) {
-        case 'Space':
-          if (this._onFloor) {
-            this._player.position.y += 5;
-            this._onFloor = false;
-          }
-          break;
-        case 'KeyV':
-          this._switchVisual();
-          break;
-      }
-    });
-  }
   private _checkCollision(time: number) {
     const collisionComponent: Collision = (
       this._worldEntity as World
@@ -279,8 +270,6 @@ export default class PlayControl extends Component {
 
     this._frameBox.max.addScalar(this._basePlayerInfo.radius);
     this._frameBox.min.addScalar(-this._basePlayerInfo.radius);
-
-    // this._instance.scene.add(new Box3Helper(this._frameBox, 0xffff00));
 
     collisionComponent.collisions?.geometry?.boundsTree?.shapecast({
       intersectsBounds: (box) => {

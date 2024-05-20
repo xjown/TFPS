@@ -41,6 +41,10 @@
   left: 50%;
   transform: translateX(-50%);
 }
+.jump-control:hover,
+.change-control:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
 .jump-control {
   z-index: 9999;
   position: absolute;
