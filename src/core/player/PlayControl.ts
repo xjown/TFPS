@@ -48,7 +48,7 @@ export default class PlayControl extends Component {
   constructor(instance: Core) {
     super();
     this._instance = instance;
-    this._event = Events.getStance().getEvent(ACTION_EVENT_NAME);
+    this._event = Events.getStance().getEvent(ACTION_EVENT_NAME) as ActionEvent;
     this.position = new Vector3(0, 0, 0);
 
     // default Character
@@ -248,7 +248,8 @@ export default class PlayControl extends Component {
 
   private _playerOtherAction() {
     this._event.addEventListener(KEY_CODE, ({ message }) => {
-      const { code } = message;
+      const { code, repeat } = message;
+      if (repeat) return;
       switch (code) {
         case 'Space':
           if (this._onFloor) {

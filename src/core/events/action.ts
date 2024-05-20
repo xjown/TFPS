@@ -4,7 +4,7 @@ import nipplejs from 'nipplejs';
 export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
 
 export default class ActionEvent extends EventDispatcher<{
-  [KEY_CODE]: { message: { code: string } };
+  [KEY_CODE]: { message: KeyboardEvent };
 }> {
   downDowning: { [key in allowKeyDownType]: boolean } = {
     KeyW: false,
@@ -85,11 +85,11 @@ export default class ActionEvent extends EventDispatcher<{
     ) {
       this.downDowning[code as allowKeyDownType] = true;
     } else {
-      this.actionEvent(code);
+      this.actionEvent(event);
     }
   }
 
-  actionEvent(code: string) {
-    this.dispatchEvent({ type: KEY_CODE, message: { code } });
+  actionEvent(event: KeyboardEvent) {
+    this.dispatchEvent({ type: KEY_CODE, message: event });
   }
 }
