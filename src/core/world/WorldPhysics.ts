@@ -10,12 +10,14 @@ export default class WorldPhysics extends Component {
   private _playPhysics!: PlayPhysics;
   private _ui!: UI;
 
+  public isPlayerOverlapping: boolean;
   public weaponPhysics!: Ammo.btGhostObject;
   public name: string = 'worldPhysics';
   public physicsWorld: Ammo.btDiscreteDynamicsWorld;
 
   constructor(physicsWorld: Ammo.btDiscreteDynamicsWorld) {
     super();
+    this.isPlayerOverlapping = false;
     this.physicsWorld = physicsWorld;
   }
 
@@ -77,8 +79,10 @@ export default class WorldPhysics extends Component {
         this._playPhysics.body!
       )
     ) {
+      this.isPlayerOverlapping = true;
       if (!this._ui.weaponTip) this._ui.weaponTip = true;
     } else {
+      this.isPlayerOverlapping = false;
       if (this._ui.weaponTip) this._ui.weaponTip = false;
     }
   }

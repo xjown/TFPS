@@ -1,10 +1,11 @@
-import { KEY_CODE } from '@/configs';
+import { KEY_CODE, MOUSE_EVENT } from '@/configs';
 import nipplejs from 'nipplejs';
 
 export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
 
 export default class ActionEvent extends EventDispatcher<{
   [KEY_CODE]: { message: { code: string; event?: KeyboardEvent } };
+  [MOUSE_EVENT]: { message: MouseEvent };
 }> {
   downDowning: { [key in allowKeyDownType]: boolean } = {
     KeyW: false,
@@ -28,6 +29,7 @@ export default class ActionEvent extends EventDispatcher<{
     } else {
       window.addEventListener('keydown', this._keydown.bind(this));
       window.addEventListener('keyup', this._keyup.bind(this));
+      window.addEventListener('mousemove', this._mouseMove.bind(this));
     }
     this._initControl(controlHandle);
   }
@@ -91,5 +93,9 @@ export default class ActionEvent extends EventDispatcher<{
 
   actionEvent(code: string, event?: KeyboardEvent) {
     this.dispatchEvent({ type: KEY_CODE, message: { code, event } });
+  }
+
+  private _mouseMove(event: MouseEvent) {
+    this.dispatchEvent({ type: MOUSE_EVENT, message: event });
   }
 }

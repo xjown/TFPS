@@ -2,6 +2,7 @@ import { Ammo, AmmoHelper } from '@/core/ammo';
 import Component from '@/core/Component';
 
 import type PlayControl from './PlayControl';
+import { btQuaternion } from 'ammo.js';
 export default class PlayPhysics extends Component {
   public name: string = 'playPhysics';
   public physicsWorld: Ammo.btDiscreteDynamicsWorld;
@@ -27,6 +28,7 @@ export default class PlayPhysics extends Component {
         playControl.position.z
       )
     );
+    transform.setRotation(new Ammo.btQuaternion(0, 0, 0, 1));
 
     const localInertia = new Ammo.btVector3(0, 0, 0);
 

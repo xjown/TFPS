@@ -1,19 +1,15 @@
 import Events from '../events';
-import { ACTION_EVENT_NAME, KEY_CODE } from '@/configs';
+import { ACTION_EVENT_NAME, KEY_CODE, MOUSE_EVENT } from '@/configs';
 import Component from '@/core/Component';
 import { Man } from '../character';
 import { Ammo } from '@/core/ammo';
 import Weapon from './Weapon';
 
-import UI from '../ui';
 import type Core from '../index';
 import type ActionEvent from '../events/action';
-import type Collision from '../collision';
 import type { World } from '../world';
 import type PlayPhysics from './PlayPhysics';
 import type {
-  Box3 as Box3Type,
-  Line3 as Line3Type,
   Mesh as MeshType,
   BufferGeometry as BufferGeometryType,
   MeshBasicMaterial as MeshBasicMaterialType,
@@ -29,10 +25,7 @@ export default class PlayControl extends Component {
     radius: 1,
     firstPerson: true,
   };
-  private _frameBox: Box3Type;
-  private _frameLine: Line3Type;
   private _onFloor: boolean;
-  private _downDistance: Vector3Type;
   private _mixer!: AnimationMixerType;
   private _currentAction: string;
   private _event: ActionEvent;
@@ -40,11 +33,13 @@ export default class PlayControl extends Component {
   private _body!: Ammo.btRigidBody;
   private _physicsWorld!: PlayPhysics;
   private _weapon: Weapon;
-  private _ui!: UI;
+  private _angle: { x: number; y: number };
 
   public position: Vector3Type;
   public character: Man;
   public name: string;
+  public xAxis = new Quaternion();
+  public yAxis = new Quaternion();
 
   constructor(instance: Core) {
     super();
@@ -52,20 +47,20 @@ export default class PlayControl extends Component {
     this._instance = instance;
     this._event = Events.getStance().getEvent(ACTION_EVENT_NAME) as ActionEvent;
     this.position = new Vector3(0, 0, 0);
-    this._frameBox = new Box3();
-    this._frameLine = new Line3();
     this._speed = 6;
     this._currentAction = 'idle';
-    this._downDistance = new Vector3(0, 0, 0);
     this._onFloor = true;
-    this._weapon = new Weapon(instance, this._event);
+    this._weapon = new Weapon(instance);
+    this._angle = {
+      x: 0,
+      y: 0,
+    };
 
     // default Character
     this.character = new Man();
   }
 
   initialize() {
-    this._ui = this.FindEntity('ui')?.getComponent('ui') as UI;
     this._physicsWorld = this.getComponent('playPhysics')! as PlayPhysics;
     this._worldEntity = this.FindEntity('world')?.getComponent(
       'world'
@@ -75,6 +70,7 @@ export default class PlayControl extends Component {
     this._createPlayer();
     this._setupEvents();
     this._switchVisual();
+    this._weapon.initialize();
   }
 
   async load() {
@@ -112,6 +108,8 @@ export default class PlayControl extends Component {
   }
 
   private _setupEvents() {
+    const mouseSpeed = 0.004;
+
     this._event.addEventListener(KEY_CODE, ({ message }) => {
       const { code, event } = message;
       if (event && event.repeat) return;
@@ -125,7 +123,26 @@ export default class PlayControl extends Component {
         case 'KeyV':
           this._switchVisual();
           break;
+        case 'Pick':
+          this._weapon.switchState(true);
       }
+    });
+
+    this._event.addEventListener(MOUSE_EVENT, ({ message }) => {
+      this._angle.x -= message.movementX * mouseSpeed;
+      this._angle.y -= message.movementY * mouseSpeed;
+
+      // 沿x轴
+      this._angle.y = Math.max(Math.min(this._angle.y, Math.PI), -Math.PI / 2);
+      // 沿y轴
+      this._angle.x = Math.max(Math.min(this._angle.x, Math.PI), -Math.PI / 2);
+
+      this.xAxis
+        .setFromAxisAngle(new Vector3(0, 1, 0), this._angle.x)
+        .normalize();
+      this.yAxis
+        .setFromAxisAngle(new Vector3(1, 0, 0), this._angle.y)
+        .normalize();
     });
   }
 
@@ -133,199 +150,89 @@ export default class PlayControl extends Component {
     const ms = this._body.getMotionState();
     if (ms) {
       const transform = new Ammo.btTransform();
-      ms.getWorldTransform(transform);
-      // 调整摄像机
-      const cameraDistance = new Vector3().subVectors(
-        new Vector3(
-          transform.getOrigin().x(),
-          transform.getOrigin().y(),
-          transform.getOrigin().z()
-        ),
-        this._instance.orbit_controls.target
-      );
-      this._player.position.set(
-        transform.getOrigin().x(),
-        transform.getOrigin().y(),
-        transform.getOrigin().z()
-      );
+      const position = transform.getOrigin();
+      const rotation = transform.getRotation();
 
-      // const cameraDistance = new Vector3().subVectors(
-      //   this.position,
-      //   this._instance.orbit_controls.target
+      ms.getWorldTransform(transform);
+      // this._player.position.set(
+      //   transform.getOrigin().x(),
+      //   transform.getOrigin().y(),
+      //   transform.getOrigin().z()
       // );
 
-      this._instance.orbit_controls.target.copy(
-        new Vector3(
-          transform.getOrigin().x(),
-          transform.getOrigin().y(),
-          transform.getOrigin().z()
-        )
+      this._instance.camera.position.set(
+        position.x(),
+        position.y(),
+        position.z()
       );
 
-      // this._instance.orbit_controls.target.copy(this.position);
+      this._instance.camera.quaternion.copy(
+        new Quaternion().multiplyQuaternions(this.xAxis, this.yAxis).normalize()
+      );
 
       this._updateAction(timeStep, {
-        x: transform.getOrigin().x(),
-        y: transform.getOrigin().y(),
-        z: transform.getOrigin().z(),
+        x: position.x(),
+        y: position.y(),
+        z: position.z(),
       });
 
-      this._instance.camera.position.add(cameraDistance);
       this._instance.camera.updateMatrix();
     }
   }
 
   update(time: number) {
-    // this.position.set(
-    //   this._player.position.x,
-    //   this._player.position.y,
-    //   this._player.position.z
-    // );
-
     if ((this._worldEntity as World).getCollision().collisions) {
-      // this._checkCollision(time);
       this._updatePlayer(time);
     }
 
-    // action
-    // this._updateAction(time);
-
-    // // 调整摄像机
-    // const cameraDistance = new Vector3().subVectors(
-    //   this._player.position,
-    //   this._instance.orbit_controls.target
-    // );
-    // this._instance.orbit_controls.target.copy(this._player.position);
-    // this._instance.camera.position.add(cameraDistance);
-    // this._instance.camera.updateMatrix();
+    this._instance.camera.updateMatrix();
   }
 
   private _updatePlayer(time: number) {
-    const angle = this._instance.orbit_controls.getAzimuthalAngle();
-    const rotation = new Vector3(0, 0, 0);
-
-    // this._downDistance.y = this._onFloor ? 0 : this._gravity * time * -1;
-
-    // this._player.position.add(this._downDistance);
+    const distance = new Vector3(0, 0, 0);
 
     if (this._event.downDowning.KeyW) {
-      rotation.set(0, 0, -1).applyAxisAngle(new Vector3(0, 1, 0), angle);
+      distance
+        .set(0, 0, -1)
+        .multiplyScalar(this._speed)
+        .applyQuaternion(this.xAxis);
     }
     if (this._event.downDowning.KeyS) {
-      rotation.set(0, 0, 1).applyAxisAngle(new Vector3(0, 1, 0), angle);
+      distance
+        .set(0, 0, 1)
+        .applyQuaternion(this.xAxis)
+        .multiplyScalar(this._speed);
     }
     if (this._event.downDowning.KeyA) {
-      rotation.set(-1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle);
+      distance
+        .set(-1, 0, 0)
+        .applyQuaternion(this.xAxis)
+        .multiplyScalar(this._speed);
     }
     if (this._event.downDowning.KeyD) {
-      rotation.set(1, 0, 0).applyAxisAngle(new Vector3(0, 1, 0), angle);
+      distance
+        .set(1, 0, 0)
+        .applyQuaternion(this.xAxis)
+        .multiplyScalar(this._speed);
     }
 
-    const currentPos = rotation.clone().multiplyScalar(this._speed);
-
-    const physicsPos = new Ammo.btVector3(
-      currentPos.x,
-      currentPos.y,
-      currentPos.z
-    );
+    const physicsPos = new Ammo.btVector3(distance.x, distance.y, distance.z);
     this._body.setLinearVelocity(physicsPos);
-    this._body.setAngularVelocity(new Ammo.btVector3(0, angle, 0));
-
-    // this._player.position.addScaledVector(rotation, this._speed * time);
-
-    //此处必须更新。默认为自动更新，但是会慢一拍。如果不更新会导致计算距离不准确
-    // 详情 _checkCollision()方法 => moveStance变量
-    // this._player.updateMatrixWorld();
+    this._body.setAngularVelocity(new Ammo.btVector3(0, 0, 0));
   }
 
   private _switchVisual() {
     if (!this._basePlayerInfo.firstPerson) {
-      this._instance.camera.position
-        .sub(this._instance.orbit_controls.target)
-        .normalize()
-        .multiplyScalar(10)
-        .add(this._instance.orbit_controls.target);
-      this._instance.orbit_controls.maxPolarAngle = Math.PI / 2;
-      this._instance.orbit_controls.minDistance = 1;
-      this._instance.orbit_controls.maxDistance = 20;
       this.character.person.visible = true;
     } else {
-      this._instance.camera.position
-        .sub(this._instance.orbit_controls.target)
-        .normalize();
-      this._instance.camera.position.x /= 10;
-      this._instance.camera.position.y /= 10;
-      this._instance.camera.position.z /= 10;
-      this._instance.camera.position.add(this._instance.orbit_controls.target);
-      this._instance.orbit_controls.maxPolarAngle = Math.PI;
-      this._instance.orbit_controls.minDistance = 1e-4;
-      this._instance.orbit_controls.maxDistance = 1e-4;
       this.character.person.visible = false;
     }
     this._basePlayerInfo.firstPerson = !this._basePlayerInfo.firstPerson;
   }
 
-  private _checkCollision(time: number) {
-    const collisionComponent: Collision = (
-      this._worldEntity as World
-    ).getCollision();
-
-    this._frameBox.makeEmpty();
-    this._frameLine.set(new Vector3(0, 0, 0), new Vector3(0, -3, 0));
-
-    this._frameLine.start.applyMatrix4(this._player.matrixWorld);
-    this._frameLine.end.applyMatrix4(this._player.matrixWorld);
-
-    this._frameBox.expandByPoint(this._frameLine.start);
-    this._frameBox.expandByPoint(this._frameLine.end);
-
-    this._frameBox.max.addScalar(this._basePlayerInfo.radius);
-    this._frameBox.min.addScalar(-this._basePlayerInfo.radius);
-
-    collisionComponent.collisions?.geometry?.boundsTree?.shapecast({
-      intersectsBounds: (box) => {
-        return box.intersectsBox(this._frameBox);
-      },
-      intersectsTriangle: (triangle) => {
-        const triangleNear = new Vector3();
-        const lineNear = new Vector3();
-        const distance = triangle.closestPointToSegment(
-          this._frameLine,
-          triangleNear,
-          lineNear
-        );
-        if (distance < this._basePlayerInfo.radius) {
-          const deep = this._basePlayerInfo.radius - distance;
-          // 始终为负
-          const direction = lineNear.sub(triangleNear).normalize();
-          // 减去deep超出值
-          this._frameLine.start.addScaledVector(direction, deep);
-          this._frameLine.end.addScaledVector(direction, deep);
-        }
-      },
-    });
-
-    const newPosition = new Vector3();
-    const move_distance = new Vector3();
-    newPosition.copy(this._frameLine.start);
-
-    move_distance.subVectors(newPosition, this._player.position);
-    const offsets = Math.max(0.0, move_distance.length());
-
-    //因为偏移量乘以x，y，z轴所以遇到碰撞后x，y轴也会变化
-    move_distance.normalize().multiplyScalar(offsets - 1e-5);
-
-    // move_distance.y 大于零的情况下一定在地面上。
-    this._onFloor = move_distance.y > Math.abs(this._downDistance.y);
-
-    this._player.position.add(move_distance);
-    this._player.updateMatrixWorld();
-  }
-
   _updateAction(time: number, pos: { x: number; y: number; z: number }) {
     let angle: number = Math.PI;
     let nextAction: string = '';
-    const cameraAngle = this._instance.orbit_controls.getAzimuthalAngle();
     const characterAngle = new Quaternion().copy(
       this.character.person.quaternion
     );
@@ -359,7 +266,7 @@ export default class PlayControl extends Component {
         .fadeIn(0.1);
     }
 
-    characterAngle.setFromAxisAngle(new Vector3(0, 1, 0), cameraAngle + angle);
+    // characterAngle.setFromAxisAngle(new Vector3(0, 1, 0), cameraAngle + angle);
     this.character.person.quaternion.slerp(characterAngle, 0.2);
     // this.character.person.position
     //   .applyMatrix4(this._player.matrixWorld)

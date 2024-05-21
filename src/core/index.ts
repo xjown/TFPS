@@ -27,8 +27,6 @@ export default class Core {
   clock: ClockType;
   renderer: WebGLRendererType;
   camera: PerspectiveCameraType;
-  orbit_controls: OrbitControls;
-  world: World;
   physicsWorld!: Ammo.btDiscreteDynamicsWorld;
   entityCollection!: EntityCollection;
   listen: AudioListener;
@@ -38,13 +36,9 @@ export default class Core {
     this.clock = new Clock();
     this.renderer = new WebGLRenderer();
     this.camera = new PerspectiveCamera();
-    this.orbit_controls = new OrbitControls(
-      this.camera,
-      this.renderer.domElement
-    );
+    // this.orbit_controls = new OrbitControls();
     this.listen = new AudioListener();
     Events.getStance().init();
-    this.world = new World(this);
     AmmoHelper.init(() => this._init());
   }
 
@@ -79,6 +73,8 @@ export default class Core {
     this.entityCollection.addEntity(worldEntity);
 
     await this._loadAssets(assets);
+
+    this.scene.add(this.camera);
     this.entityCollection.entitySetup();
     this.update();
   }
@@ -108,9 +104,9 @@ export default class Core {
     this.renderer.shadowMap.enabled = true;
     this.renderer.outputColorSpace = SRGBColorSpace;
 
-    this.orbit_controls.dampingFactor = 0.2;
-    this.orbit_controls.enableZoom = false;
-    this.orbit_controls.enablePan = false;
+    // this.orbit_controls.dampingFactor = 0.2;
+    // this.orbit_controls.enableZoom = false;
+    // this.orbit_controls.enablePan = false;
 
     this.camera.position.set(0, 0, 1);
     this.camera.add(this.listen);
@@ -170,7 +166,7 @@ export default class Core {
     window.requestAnimationFrame(() => {
       const time = Math.min(1.0 / 30.0, this.clock.getDelta());
 
-      this.orbit_controls.update();
+      // this.orbit_controls.update();
 
       this.physicsWorld.stepSimulation(time, 10);
 

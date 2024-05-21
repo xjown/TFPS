@@ -1,48 +1,49 @@
 import Loader from '../loader';
-import { Audio } from 'three';
-import { GUN_HAND, GUN_FLASH, GUN_SOUND, KEY_CODE } from '@/configs';
+import { Audio, Object3D } from 'three';
+import { GUN_HAND, GUN_FLASH, GUN_SOUND } from '@/configs';
 
 import type Core from '../index';
-import type ActionEvent from '../events/action';
 
 export default class Weapon extends Loader {
   public name: string = 'Weapon';
 
   private _sound: Audio;
-  private _actionEvent: ActionEvent;
+  private _ak_scene!: Object3D;
+  private _ak_flash_scene!: Object3D;
+  private _instance: Core;
 
-  constructor(instance: Core, event: ActionEvent) {
+  constructor(instance: Core) {
     super();
+    this._instance = instance;
     this._sound = new Audio(instance.listen);
-    this._actionEvent = event;
-
-    this._setupEvents();
   }
 
   async load() {
     const { scene: ak_scene } = await this.loadGLTF(GUN_HAND);
     const { scene: flash_scene } = await this.loadGLTF(GUN_FLASH);
     const sound = await this.loadAudio(GUN_SOUND);
-    ak_scene.position.set(0, 5, 0);
-    ak_scene.scale.set(0.4, 0.4, 0.4);
+    ak_scene.scale.set(0.05, 0.05, 0.05);
+    ak_scene.position.set(0.04, -0.02, 0.0);
+    ak_scene.setRotationFromEuler(
+      new Euler(MathUtils.degToRad(5), MathUtils.degToRad(185), 0)
+    );
 
-    ak_scene.visible = false;
+    // ak_scene.visible = false;
     flash_scene.visible = false;
 
     this._sound.setBuffer(sound);
 
+    this._ak_scene = ak_scene;
+    this._ak_flash_scene = flash_scene;
+
     return { ak_scene, flash_scene };
   }
 
-  _setupEvents() {
-    this._actionEvent.addEventListener(KEY_CODE, ({ message }) => {
-      const { code, event } = message;
-      if (event && event.repeat) return;
-      switch (code) {
-        case 'KeyF':
-          console.log(11);
-          break;
-      }
-    });
+  initialize() {
+    this._instance.camera.add(this._ak_scene);
+  }
+
+  switchState(state: boolean) {
+    this._ak_scene.visible = state;
   }
 }
