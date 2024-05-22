@@ -20,7 +20,7 @@ import type {
   WebGLRenderer as WebGLRendererType,
   PerspectiveCamera as PerspectiveCameraType,
 } from 'three';
-import type UIEvents from '@/core/events/ui';
+import type UIEvents from '@/core/events/UIEvents';
 
 export default class Core {
   scene: SceneType;
@@ -36,19 +36,23 @@ export default class Core {
     this.clock = new Clock();
     this.renderer = new WebGLRenderer();
     this.camera = new PerspectiveCamera();
-    // this.orbit_controls = new OrbitControls();
     this.listen = new AudioListener();
-    Events.getStance().init();
+
     AmmoHelper.init(() => this._init());
   }
 
   private _init() {
+    this._setupEvents();
     this._setupPhysics();
     this._setupGraphic();
-    this._entitySetup();
+    this._setupEntity();
   }
 
-  private async _entitySetup() {
+  _setupEvents() {
+    Events.getStance().init();
+  }
+
+  private async _setupEntity() {
     const assets: Entity[] = [];
     this.entityCollection = new EntityCollection();
 

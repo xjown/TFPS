@@ -1,6 +1,11 @@
-import { UI_EVENT_NAME, ACTION_EVENT_NAME } from '@/configs';
-import ActionEvent from './action';
-import UIEvents from './ui';
+import {
+  UI_EVENT_NAME,
+  ACTION_EVENT_NAME,
+  POINT_LOCK_EVENT_NAME,
+} from '@/configs';
+import ActionEvent from './ActionEvent';
+import UIEvents from './UIEvents';
+import PointLock from './PointLock';
 
 import type { EventDispatcher } from 'three';
 
@@ -20,6 +25,7 @@ export default class Events {
   init() {
     this._registerEvents(new ActionEvent(), ACTION_EVENT_NAME);
     this._registerEvents(new UIEvents(), UI_EVENT_NAME);
+    this._registerEvents(new PointLock(), POINT_LOCK_EVENT_NAME);
   }
 
   private _registerEvents(event: EventDispatcher, name: string) {

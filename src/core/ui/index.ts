@@ -10,8 +10,8 @@ import {
 import changeImage from '@/assets/images/change.png';
 import jumpImage from '@/assets/images/jump.png';
 
-import type UIEvents from '../events/ui';
-import type ActionEvent from '../events/action';
+import type UIEvents from '../events/UIEvents';
+import type ActionEvent from '../events/ActionEvent';
 export default class UI extends Component {
   private _event: UIEvents;
   private _actionEvent: ActionEvent;
@@ -24,11 +24,21 @@ export default class UI extends Component {
       ACTION_EVENT_NAME
     ) as ActionEvent;
     this._loadingHandle = document.getElementById('loading')!;
+
     this._manageLoad();
-    this._loadingOff();
+    this._setupEvents();
   }
 
-  initialize() {}
+  _setupEvents() {}
+
+  initialize() {
+    const controlHandle = this._createControl();
+
+    this._createAction();
+
+    this._actionEvent.bindEvent(controlHandle);
+    this._loadingHandle.style.display = 'none';
+  }
 
   set weaponTip(visible: boolean) {
     const el = document.querySelector<HTMLElement>('.weapon')!;
@@ -57,16 +67,6 @@ export default class UI extends Component {
   get tip() {
     const el = document.querySelector<HTMLElement>('#tips')!;
     return el.style.display === 'block';
-  }
-
-  _loadingOff() {
-    this._event.addEventListener(STATIC_LOADED, () => {
-      const controlHandle = this._createControl();
-      this._createAction();
-
-      this._actionEvent.bindEvent(controlHandle);
-      this._loadingHandle.style.display = 'none';
-    });
   }
 
   _manageLoad() {

@@ -2,7 +2,7 @@ import { Ammo, AmmoHelper } from '@/core/ammo';
 import Component from '@/core/Component';
 
 import type PlayControl from './PlayControl';
-import { btQuaternion } from 'ammo.js';
+
 export default class PlayPhysics extends Component {
   public name: string = 'playPhysics';
   public physicsWorld: Ammo.btDiscreteDynamicsWorld;
@@ -53,6 +53,10 @@ export default class PlayPhysics extends Component {
     this.body.setFriction(0);
     this.body.setCollisionFlags(
       this.body.getCollisionFlags() | AmmoHelper.CF_CHARACTER_OBJECT
+    );
+
+    this.body.setActivationState(
+      AmmoHelper.bodyActiveState.DISABLE_DEACTIVATION
     );
 
     this.physicsWorld.addRigidBody(this.body);

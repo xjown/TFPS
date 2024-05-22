@@ -8,7 +8,7 @@ import Collision from '../collision';
 import { LightFlowWall } from '@/core/effects';
 
 import WorldPhysics from './WorldPhysics';
-import type ActionEvent from '../events/action';
+import type ActionEvent from '../events/ActionEvent';
 import type Core from '../index';
 import type { Object3D } from 'three';
 

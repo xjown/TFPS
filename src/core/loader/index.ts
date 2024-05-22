@@ -4,7 +4,7 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { TextureLoader } from 'three';
 import { UI_EVENT_NAME, LOAD_PROCESS } from '@/configs';
 
-import type UIEvent from '../events/ui';
+import type UIEvent from '../events/UIEvents';
 import type { Object3D } from 'three';
 
 export default class Loader {

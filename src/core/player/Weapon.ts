@@ -28,7 +28,7 @@ export default class Weapon extends Loader {
       new Euler(MathUtils.degToRad(5), MathUtils.degToRad(185), 0)
     );
 
-    // ak_scene.visible = false;
+    ak_scene.visible = false;
     flash_scene.visible = false;
 
     this._sound.setBuffer(sound);
@@ -41,6 +41,7 @@ export default class Weapon extends Loader {
 
   initialize() {
     this._instance.camera.add(this._ak_scene);
+    this._instance.camera.add(this._ak_flash_scene);
   }
 
   switchState(state: boolean) {

@@ -20,6 +20,19 @@ class AmmoHelper {
     AllFilter: -1,
   };
 
+  static bodyActiveState = {
+    // 物体受到力或碰撞影响，参与物理模拟。
+    ACTIVE_TAG: 1,
+    // 物体处于休眠状态，不参与物理模拟。
+    ISLAND_SLEEPING: 2,
+    // 物体希望被取消激活，一般用于性能优化。
+    WANTS_DEACTIVATION: 3,
+    // 物体不能被自动休眠，一直保持活跃。
+    DISABLE_DEACTIVATION: 4,
+    // 物体从模拟中完全移除。
+    DISABLE_SIMULATION: 5,
+  };
+
   // 物体不会移动,但会对其他物体施加力。
   static CF_STATIC_OBJECT: number = 1;
 
