@@ -6,6 +6,7 @@ export const STATIC_LOADED = 'static_loaded';
 export const LOAD_PROCESS = 'load_process';
 export const KEY_CODE = 'key_code';
 export const MOUSE_EVENT = 'mouse_event';
+export const SCREEN_IS_LOCK = 'screen_is_lock';
 
 // message
 export const WARNING_MSG = 'warning_msg';

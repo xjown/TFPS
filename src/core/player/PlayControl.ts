@@ -1,5 +1,11 @@
 import Events from '../events';
-import { ACTION_EVENT_NAME, KEY_CODE, MOUSE_EVENT } from '@/configs';
+import {
+  ACTION_EVENT_NAME,
+  KEY_CODE,
+  MOUSE_EVENT,
+  SCREEN_IS_LOCK,
+  POINT_LOCK_EVENT_NAME,
+} from '@/configs';
 import Component from '@/core/Component';
 import { Man } from '../character';
 import { Ammo } from '@/core/ammo';
@@ -7,6 +13,7 @@ import Weapon from './Weapon';
 
 import type Core from '../index';
 import type ActionEvent from '../events/ActionEvent';
+import type PointLock from '../events/PointLock';
 import type PlayPhysics from './PlayPhysics';
 import type {
   Vector3 as Vector3Type,
@@ -25,6 +32,7 @@ export default class PlayControl extends Component {
   private _physicsWorld!: PlayPhysics;
   private _weapon: Weapon;
   private _angle: { x: number; y: number };
+  private _isLock: boolean;
 
   public position: Vector3Type;
   public character: Man;
@@ -42,6 +50,7 @@ export default class PlayControl extends Component {
     this._speed = 6;
     this._currentAction = 'idle';
     this._onFloor = true;
+    this._isLock = false;
     this._angle = {
       x: 0,
       y: 0,
@@ -173,18 +182,20 @@ export default class PlayControl extends Component {
   private _setupEvents() {
     this._onMouseMove();
     this._onKeyDown();
+    this._screenLock();
   }
 
   private _onMouseMove() {
     const mouseSpeed = 0.004;
     this._event.addEventListener(MOUSE_EVENT, ({ message }) => {
+      if (!this._isLock) return;
       this._angle.x -= message.movementX * mouseSpeed;
       this._angle.y -= message.movementY * mouseSpeed;
 
       // 沿x轴
       this._angle.y = Math.max(Math.min(this._angle.y, Math.PI), -Math.PI / 2);
       // 沿y轴
-      this._angle.x = Math.max(Math.min(this._angle.x, Math.PI), -Math.PI / 2);
+      // this._angle.x = Math.max(Math.min(this._angle.x, Math.PI), -Math.PI / 2);
 
       this.xAxis
         .setFromAxisAngle(new Vector3(0, 1, 0), this._angle.x)
@@ -197,6 +208,7 @@ export default class PlayControl extends Component {
 
   private _onKeyDown() {
     this._event.addEventListener(KEY_CODE, ({ message }) => {
+      if (!this._isLock) return;
       const { code, event } = message;
       if (event && event.repeat) return;
       switch (code) {
@@ -208,6 +220,15 @@ export default class PlayControl extends Component {
         case 'Pick':
           this._weapon.switchState(true);
       }
+    });
+  }
+
+  private _screenLock() {
+    const handle = Events.getStance().getEvent(
+      POINT_LOCK_EVENT_NAME
+    ) as PointLock;
+    handle.addEventListener(SCREEN_IS_LOCK, ({ message }) => {
+      this._isLock = message;
     });
   }
 }

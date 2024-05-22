@@ -1,4 +1,3 @@
-import '@/assets/css/index.css';
 import Component from '../Component';
 import Events from '../events';
 import {

@@ -93,7 +93,6 @@ export default class Core {
           count += 1;
           process = (count / assets.length) * 100;
           if (process >= 100) {
-            ui.dispatchEvent({ type: STATIC_LOADED });
             solver(true);
           }
         });
