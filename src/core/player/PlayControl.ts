@@ -193,7 +193,10 @@ export default class PlayControl extends Component {
       this._angle.y -= message.movementY * mouseSpeed;
 
       // 沿x轴
-      this._angle.y = Math.max(Math.min(this._angle.y, Math.PI), -Math.PI / 2);
+      this._angle.y = Math.max(
+        Math.min(this._angle.y, Math.PI / 2),
+        -Math.PI / 2
+      );
       // 沿y轴
       // this._angle.x = Math.max(Math.min(this._angle.x, Math.PI), -Math.PI / 2);
 
