@@ -45,7 +45,7 @@ export default class PlayControl extends Component {
     this.name = 'playControl';
     this._instance = instance;
     this._event = Events.getStance().getEvent(ACTION_EVENT_NAME) as ActionEvent;
-    this.position = new Vector3(0, 0, 0);
+    this.position = new Vector3(0, 2, 0);
     this._firstPerson = true;
     this._speed = 6;
     this._currentAction = 'idle';
@@ -106,14 +106,13 @@ export default class PlayControl extends Component {
       // );
 
       this._updateAction(time);
-
       this._instance.camera.updateMatrix();
     }
   }
 
   private _updatePlayer(time: number) {
     const distance = new Vector3(0, 0, 0);
-
+    const velocity = this._body.getLinearVelocity();
     if (this._event.downDowning.KeyW) {
       distance
         .set(0, 0, -1)
@@ -139,9 +138,10 @@ export default class PlayControl extends Component {
         .multiplyScalar(this._speed);
     }
 
-    const physicsPos = new Ammo.btVector3(distance.x, distance.y, distance.z);
-    this._body.setLinearVelocity(physicsPos);
-    this._body.setAngularVelocity(new Ammo.btVector3(0, 0, 0));
+    velocity.setZ(distance.z);
+    velocity.setX(distance.x);
+
+    this._body.setLinearVelocity(velocity);
   }
 
   private _switchVisual() {
@@ -197,8 +197,6 @@ export default class PlayControl extends Component {
         Math.min(this._angle.y, Math.PI / 2),
         -Math.PI / 2
       );
-      // 沿y轴
-      // this._angle.x = Math.max(Math.min(this._angle.x, Math.PI), -Math.PI / 2);
 
       this.xAxis
         .setFromAxisAngle(new Vector3(0, 1, 0), this._angle.x)

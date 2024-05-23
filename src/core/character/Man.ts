@@ -47,10 +47,4 @@ export default class Man extends Character {
     this.person.scale.set(0.04, 0.04, 0.04);
     return this.person;
   }
-
-  setPosition() {
-    if (this.person) {
-      // this.person.position.addScalar();
-    }
-  }
 }
