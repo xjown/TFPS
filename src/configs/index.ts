@@ -1,7 +1,7 @@
 export * from './define';
 
 export const BORDER_TEXTURE = new URL(
-  '../assets/models/scene_collision.glb',
+  '../assets/models/level.glb',
   import.meta.url
 ).href;
 

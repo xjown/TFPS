@@ -45,9 +45,9 @@ export default class PlayControl extends Component {
     this.name = 'playControl';
     this._instance = instance;
     this._event = Events.getStance().getEvent(ACTION_EVENT_NAME) as ActionEvent;
-    this.position = new Vector3(0, 2, 0);
+    this.position = new Vector3(3, 3, 3);
     this._firstPerson = true;
-    this._speed = 6;
+    this._speed = 4;
     this._currentAction = 'idle';
     this._onFloor = true;
     this._isLock = false;
@@ -93,6 +93,7 @@ export default class PlayControl extends Component {
         position.y(),
         position.z()
       );
+
       this._instance.camera.quaternion.copy(
         new Quaternion().multiplyQuaternions(this.xAxis, this.yAxis).normalize()
       );
@@ -113,6 +114,7 @@ export default class PlayControl extends Component {
   private _updatePlayer(time: number) {
     const distance = new Vector3(0, 0, 0);
     const velocity = this._body.getLinearVelocity();
+
     if (this._event.downDowning.KeyW) {
       distance
         .set(0, 0, -1)
@@ -186,7 +188,7 @@ export default class PlayControl extends Component {
   }
 
   private _onMouseMove() {
-    const mouseSpeed = 0.004;
+    const mouseSpeed = 0.002;
     this._event.addEventListener(MOUSE_EVENT, ({ message }) => {
       if (!this._isLock) return;
       this._angle.x -= message.movementX * mouseSpeed;

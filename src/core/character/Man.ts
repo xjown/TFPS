@@ -23,11 +23,9 @@ export default class Man extends Character {
   constructor() {
     super();
 
-    this.mass = 5;
-
-    this.size.x = 2;
-    this.size.y = 6;
-    this.size.z = 1;
+    this.mass = 75;
+    this.size.radius = 1;
+    this.size.height = 2;
   }
 
   async load(): Promise<Object3D> {

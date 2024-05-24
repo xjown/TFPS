@@ -28,55 +28,44 @@ export default class PlayPhysics extends Component {
         playControl.position.z
       )
     );
-    transform.setRotation(new Ammo.btQuaternion(0, 0, 0, 1));
-
-    const localInertia = new Ammo.btVector3(0, 0, 0);
-
-    const boxShape = new Ammo.btCapsuleShape(
-      1,
-      playControl.character.size.y / 2 + 1
-    );
-    boxShape.calculateLocalInertia(playControl.character.mass, localInertia);
-    boxShape.setMargin(0);
 
     const motionState = new Ammo.btDefaultMotionState(transform);
-
+    const shape = new Ammo.btCapsuleShape(
+      playControl.character.size.radius,
+      playControl.character.size.height / 2 + playControl.character.size.radius
+    );
+    const localInertia = new Ammo.btVector3(0, 0, 0);
     const bodyInfo = new Ammo.btRigidBodyConstructionInfo(
       playControl.character.mass,
       motionState,
-      boxShape,
+      shape,
       localInertia
     );
+
     this.body = new Ammo.btRigidBody(bodyInfo);
-
-    this.body.setFriction(0);
-    this.body.setCollisionFlags(
-      this.body.getCollisionFlags() | AmmoHelper.CF_CHARACTER_OBJECT
-    );
-
-    this.body.setActivationState(
-      AmmoHelper.bodyActiveState.DISABLE_DEACTIVATION
-    );
+    this.body.setActivationState(AmmoHelper.CF_NO_CONTACT_RESPONSE);
 
     this.physicsWorld.addRigidBody(this.body);
   }
 
   physicsUpdate(world: Ammo.btDynamicsWorld, timeStep: number): void {
     const dispatcher = this.physicsWorld.getDispatcher();
+    // 获取接触点数量
     const numManifolds = dispatcher.getNumManifolds();
-
     for (let i = 0; i < numManifolds; i++) {
+      // 储和管理两个碰撞体之间的接触信息
       const contactManifold = dispatcher.getManifoldByIndexInternal(i);
-      const obj1 = Ammo.castObject<typeof Ammo.btRigidBody>(
-        contactManifold.getBody0,
+      const obj0: Ammo.btRigidBody = Ammo.castObject<typeof Ammo.btRigidBody>(
+        contactManifold.getBody0(),
         Ammo.btRigidBody
       );
-      const obj2 = Ammo.castObject<typeof Ammo.btRigidBody>(
-        contactManifold.getBody1,
+      const obj1: Ammo.btRigidBody = Ammo.castObject<typeof Ammo.btRigidBody>(
+        contactManifold.getBody1(),
         Ammo.btRigidBody
       );
-
-      // console.log(obj2 == this.body);
+      if (obj0 != this.body && obj1 != this.body) continue;
+      const numContacts = contactManifold.getNumContacts();
+      for (let j = 0; j < numContacts; j++) {}
     }
   }
 }

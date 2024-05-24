@@ -4,6 +4,7 @@ import { Ammo, AmmoHelper } from '@/core/ammo';
 import type World from './World';
 import type { PlayPhysics } from '../player';
 import type UI from '../ui';
+import { Object3D } from 'three';
 
 export default class WorldPhysics extends Component {
   private _world!: World;
@@ -28,6 +29,10 @@ export default class WorldPhysics extends Component {
     ) as PlayPhysics;
     this._ui = this.FindEntity('ui')!.getComponent('ui') as UI;
 
+    for (let item of this._world.ConvexHullShape) {
+      this._createBorder(item);
+    }
+
     // weapon
     this.weaponPhysics = AmmoHelper.createGhostBody(
       new Ammo.btCylinderShape(
@@ -39,7 +44,7 @@ export default class WorldPhysics extends Component {
       ),
       {
         x: this._world.ak.position.x,
-        y: this._world.ak.position.y,
+        y: 0,
         z: this._world.ak.position.z,
       }
     );
@@ -48,27 +53,26 @@ export default class WorldPhysics extends Component {
       this.weaponPhysics,
       AmmoHelper.collisionFilterGroup.SensorTrigger
     );
+  }
 
-    // ground
+  _createBorder(mesh: Object3D) {
+    const mass = 0;
+    const { shape, geometry } = AmmoHelper.createConvexHullShape(mesh);
+
     const transform = new Ammo.btTransform();
     transform.setIdentity();
-    transform.setOrigin(new Ammo.btVector3(0, 0.1, 0));
 
     const motionState = new Ammo.btDefaultMotionState(transform);
     const localInertia = new Ammo.btVector3(0, 0, 0);
 
-    const groundShape = new Ammo.btStaticPlaneShape(
-      new Ammo.btVector3(0, 1, 0),
-      0
-    );
-
     const bodyInfo = new Ammo.btRigidBodyConstructionInfo(
-      0,
+      mass,
       motionState,
-      groundShape,
+      shape,
       localInertia
     );
     const body = new Ammo.btRigidBody(bodyInfo);
+
     this.physicsWorld.addRigidBody(body);
   }
 

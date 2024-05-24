@@ -81,6 +81,7 @@ class AmmoHelper {
     ghostObj.setWorldTransform(transform);
     // 物体本身不参与碰撞反应
     ghostObj.setCollisionFlags(this.CF_NO_CONTACT_RESPONSE);
+    ghostObj.setUserIndex(8);
 
     return ghostObj;
   }
@@ -115,11 +116,12 @@ class AmmoHelper {
       let lastOne = i >= il - 3;
       shape.addPoint(tempVec, lastOne);
     }
-    return shape;
+    return { shape, geometry };
   }
 }
 
 function createConvexGeom(object: Object3D) {
+  // Compute the 3D convex hull.
   let hull = new ConvexHull().setFromObject(object);
   let faces = hull.faces;
   let vertices = [];
