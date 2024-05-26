@@ -29,9 +29,9 @@ export default class WorldPhysics extends Component {
     ) as PlayPhysics;
     this._ui = this.FindEntity('ui')!.getComponent('ui') as UI;
 
-    for (let item of this._world.ConvexHullShape) {
-      this._createBorder(item);
-    }
+    this._world.ConvexHullShape.forEach((item, index) => {
+      this._createBorder(item, index + 1);
+    });
 
     // weapon
     this.weaponPhysics = AmmoHelper.createGhostBody(
@@ -55,7 +55,7 @@ export default class WorldPhysics extends Component {
     );
   }
 
-  _createBorder(mesh: Object3D) {
+  _createBorder(mesh: Object3D, index: number) {
     const mass = 0;
     const { shape, geometry } = AmmoHelper.createConvexHullShape(mesh);
 
@@ -72,6 +72,7 @@ export default class WorldPhysics extends Component {
       localInertia
     );
     const body = new Ammo.btRigidBody(bodyInfo);
+    body.setUserIndex(index);
 
     this.physicsWorld.addRigidBody(body);
   }

@@ -24,7 +24,7 @@ export default class PlayControl extends Component {
   private _instance: Core;
   private _speed: number;
   private _firstPerson: boolean;
-  private _onFloor: boolean;
+  private _canJump: boolean;
   private _mixer!: AnimationMixerType;
   private _currentAction: string;
   private _event: ActionEvent;
@@ -45,11 +45,11 @@ export default class PlayControl extends Component {
     this.name = 'playControl';
     this._instance = instance;
     this._event = Events.getStance().getEvent(ACTION_EVENT_NAME) as ActionEvent;
-    this.position = new Vector3(3, 3, 3);
+    this.position = new Vector3(3, 3, 0);
     this._firstPerson = true;
     this._speed = 4;
     this._currentAction = 'idle';
-    this._onFloor = true;
+    this._canJump = false;
     this._isLock = false;
     this._angle = {
       x: 0,
@@ -140,6 +140,12 @@ export default class PlayControl extends Component {
         .multiplyScalar(this._speed);
     }
 
+    if (this._canJump) {
+      velocity.setY(4);
+      this._physicsWorld.canJump = false;
+      this._canJump = false;
+    }
+
     velocity.setZ(distance.z);
     velocity.setX(distance.x);
 
@@ -161,7 +167,7 @@ export default class PlayControl extends Component {
       nextAction = 'walk';
     } else if (this._event.downDowning.KeyS) {
       nextAction = 'backward';
-    } else if (this._onFloor) {
+    } else if (this._canJump) {
       nextAction = 'idle';
     } else {
       nextAction = 'jump';
@@ -216,6 +222,7 @@ export default class PlayControl extends Component {
       if (event && event.repeat) return;
       switch (code) {
         case 'Space':
+          this._canJump = this._physicsWorld.canJump;
           break;
         case 'KeyV':
           this._switchVisual();

@@ -23,7 +23,7 @@ export default class World extends Component {
   public name: string = 'world';
   public collision: Collision;
   public ak = {
-    position: { x: 10, y: 1, z: 2 },
+    position: { x: 10, y: 1.5, z: 2 },
     size: { radius: 1, height: 3 },
   };
 
@@ -35,15 +35,16 @@ export default class World extends Component {
   }
 
   initialize() {
+    const hemiLight = new AmbientLight(0x404040, 30);
+
     this._effect = new LightFlowWall(this.ak.size.radius, this.ak.size.height);
-    this._effect.mesh.position.set(this.ak.position.x, 0, this.ak.position.z);
-    this._instance.scene.add(this._effect.mesh);
+    this._effect.mesh.position.set(this.ak.position.x, 1, this.ak.position.z);
     this._worldPhysics = this.getComponent('worldPhysics') as WorldPhysics;
 
-    const hemiLight = new AmbientLight(0x404040, 30);
-    this._instance.scene.add(hemiLight);
-
     this._setupEvents();
+
+    this._instance.scene.add(this._effect.mesh);
+    this._instance.scene.add(hemiLight);
   }
 
   _setupEvents() {
