@@ -47,7 +47,7 @@ export default class PlayControl extends Component {
     this._event = Events.getStance().getEvent(ACTION_EVENT_NAME) as ActionEvent;
     this.position = new Vector3(3, 3, 0);
     this._firstPerson = true;
-    this._speed = 4;
+    this._speed = 5;
     this._currentAction = 'idle';
     this._canJump = false;
     this._isLock = false;
@@ -107,6 +107,7 @@ export default class PlayControl extends Component {
       // );
 
       this._updateAction(time);
+      this._weapon.update(time);
       this._instance.camera.updateMatrix();
     }
   }
