@@ -71,7 +71,7 @@ export default class Weapon extends Loader {
     ) {
       const ps = this._ak_scene.position.z;
       this._ak_scene.position.setZ(
-        0.01 * Math.sin(((this._step + 0) / 2) * Math.PI) - 0.01
+        0.01 * Math.sin((this._step / 2) * Math.PI) - 0.01
       );
       console.log(ps);
       this._step += 0.08;
