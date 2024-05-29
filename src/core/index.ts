@@ -107,11 +107,7 @@ export default class Core {
     this.renderer.shadowMap.enabled = true;
     this.renderer.outputColorSpace = SRGBColorSpace;
 
-    // this.orbit_controls.dampingFactor = 0.2;
-    // this.orbit_controls.enableZoom = false;
-    // this.orbit_controls.enablePan = false;
-
-    this.camera.position.set(0, 0, 1);
+    this.camera.position.set(0, 0, 0);
     this.camera.add(this.listen);
 
     this._RenderRespect();
@@ -168,8 +164,6 @@ export default class Core {
   private update() {
     window.requestAnimationFrame(() => {
       const time = Math.min(1.0 / 30.0, this.clock.getDelta());
-
-      // this.orbit_controls.update();
 
       this.physicsWorld.stepSimulation(time, 10);
 

@@ -1,8 +1,11 @@
 import { ConvexHull } from 'three/examples/jsm/math/ConvexHull';
-import Ammo from 'ammo.js';
-import { Object3D } from 'three';
+import Ammo, { btCollisionObject } from 'ammo.js';
+
+import type { Object3D, Vector3 } from 'three';
 
 class AmmoHelper {
+  static _startRayVector: Ammo.btVector3;
+  static _endRayVector: Ammo.btVector3;
   static collisionFilterGroup = {
     // 00000001
     DefaultFilter: 1 << 0,
@@ -33,22 +36,24 @@ class AmmoHelper {
     DISABLE_SIMULATION: 5,
   };
 
-  // 物体不会移动,但会对其他物体施加力。
-  static CF_STATIC_OBJECT: number = 1;
-
-  // 将物体标记为运动学物体，运动学物体由用户代码移动，而不是由物理引擎模拟。
-  static CF_KINEMATIC_OBJECT: number = 2;
-
-  // 物体本身不受碰撞影响，不会产生移动、旋转等物理响应。但它仍能检测和报告与其他物体的碰撞。
-  static CF_NO_CONTACT_RESPONSE: number = 4;
-
-  // 将物体标记为角色对象，可以用于角色控制器。
-  static CF_CHARACTER_OBJECT: number = 16;
+  static collisionFlag = {
+    // 物体不会移动,但会对其他物体施加力。
+    CF_STATIC_OBJECT: 1,
+    // 将物体标记为运动学物体，运动学物体由用户代码移动，而不是由物理引擎模拟。
+    CF_KINEMATIC_OBJECT: 2,
+    // 物体本身不受碰撞影响，不会产生移动、旋转等物理响应。但它仍能检测和报告与其他物体的碰撞。
+    CF_NO_CONTACT_RESPONSE: 4,
+    // 将物体标记为角色对象，可以用于角色控制器。
+    CF_CHARACTER_OBJECT: 16,
+  };
 
   static init(callback = () => {}) {
     // @ts-ignore
     Ammo.bind(Ammo)(Ammo).then(() => {
       callback();
+
+      this._endRayVector = new Ammo.btVector3(0, 0, 0);
+      this._startRayVector = new Ammo.btVector3(0, 0, 0);
     });
   }
 
@@ -80,7 +85,7 @@ class AmmoHelper {
     ghostObj.setCollisionShape(shape);
     ghostObj.setWorldTransform(transform);
     // 物体本身不参与碰撞反应
-    ghostObj.setCollisionFlags(this.CF_NO_CONTACT_RESPONSE);
+    ghostObj.setCollisionFlags(this.collisionFlag.CF_NO_CONTACT_RESPONSE);
     ghostObj.setUserIndex(8);
 
     return ghostObj;
@@ -118,6 +123,38 @@ class AmmoHelper {
     }
     return { shape, geometry };
   }
+
+  static rayCast(
+    start: Vector3,
+    end: Vector3,
+    physicsWorld: Ammo.btDiscreteDynamicsWorld,
+    result: RayCastResultType
+  ) {
+    this._startRayVector.setValue(start.x, start.y, start.z);
+    this._endRayVector.setValue(end.x, end.y, end.z);
+
+    const rayCallBack = new Ammo.ClosestRayResultCallback(
+      this._startRayVector,
+      this._endRayVector
+    );
+
+    rayCallBack.set_m_closestHitFraction(1);
+    // @ts-ignore
+    rayCallBack.set_m_collisionObject(undefined);
+
+    physicsWorld.rayTest(this._startRayVector, this._endRayVector, rayCallBack);
+
+    if (rayCallBack.hasHit()) {
+      const ps = rayCallBack.get_m_hitPointWorld();
+      const nor = rayCallBack.get_m_hitNormalWorld();
+      // console.log(ps.x(), ps.y(), ps.z());
+      result.collisionObject = rayCallBack.get_m_collisionObject();
+      result.intersectionNormal.set(nor.x(), nor.y(), nor.z());
+      result.intersectionPoint.set(ps.x(), ps.y(), ps.z());
+      return true;
+    }
+    return false;
+  }
 }
 
 function createConvexGeom(object: Object3D) {
@@ -146,3 +183,9 @@ function createConvexGeom(object: Object3D) {
 }
 
 export { AmmoHelper, Ammo };
+
+export type RayCastResultType = {
+  intersectionPoint: Vector3;
+  intersectionNormal: Vector3;
+  collisionObject?: Ammo.btCollisionObject;
+};

@@ -47,7 +47,9 @@ export default class PlayPhysics extends Component {
     );
 
     this.body = new Ammo.btRigidBody(bodyInfo);
-    this.body.setActivationState(AmmoHelper.CF_NO_CONTACT_RESPONSE);
+    this.body.setActivationState(
+      AmmoHelper.bodyActiveState.DISABLE_DEACTIVATION
+    );
     this.body.setUserIndex(0);
 
     this.physicsWorld.addRigidBody(this.body);

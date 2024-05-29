@@ -1,4 +1,4 @@
-import { KEY_CODE, MOUSE_EVENT } from '@/configs';
+import { KEY_CODE, MOUSE_EVENT, MOUSE_IS_DOWN } from '@/configs';
 import nipplejs from 'nipplejs';
 
 export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
@@ -6,6 +6,7 @@ export type allowKeyDownType = 'KeyW' | 'KeyS' | 'KeyA' | 'KeyD';
 export default class ActionEvent extends EventDispatcher<{
   [KEY_CODE]: { message: { code: string; event?: KeyboardEvent } };
   [MOUSE_EVENT]: { message: MouseEvent };
+  [MOUSE_IS_DOWN]: { message: { isDown: boolean; event: MouseEvent } };
 }> {
   downDowning: { [key in allowKeyDownType]: boolean } = {
     KeyW: false,
@@ -30,6 +31,8 @@ export default class ActionEvent extends EventDispatcher<{
       window.addEventListener('keydown', this._keydown.bind(this));
       window.addEventListener('keyup', this._keyup.bind(this));
       window.addEventListener('mousemove', this._mouseMove.bind(this));
+      window.addEventListener('mousedown', this._mousedown.bind(this));
+      window.addEventListener('mouseup', this._mouseUp.bind(this));
     }
     this._initControl(controlHandle);
   }
@@ -41,7 +44,7 @@ export default class ActionEvent extends EventDispatcher<{
       position: { left: '50%', top: '50%' },
     });
     control.on('move', (res, data) => {
-      const { direction, angle } = data;
+      const { angle } = data;
       if (!angle) return;
 
       const { degree } = angle;
@@ -97,5 +100,19 @@ export default class ActionEvent extends EventDispatcher<{
 
   private _mouseMove(event: MouseEvent) {
     this.dispatchEvent({ type: MOUSE_EVENT, message: event });
+  }
+
+  private _mousedown(event: MouseEvent) {
+    this.dispatchEvent({
+      type: MOUSE_IS_DOWN,
+      message: { isDown: true, event },
+    });
+  }
+
+  private _mouseUp(event: MouseEvent) {
+    this.dispatchEvent({
+      type: MOUSE_IS_DOWN,
+      message: { isDown: false, event },
+    });
   }
 }

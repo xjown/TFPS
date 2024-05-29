@@ -73,7 +73,7 @@ export default class WorldPhysics extends Component {
     );
     const body = new Ammo.btRigidBody(bodyInfo);
     body.setUserIndex(index);
-
+    body.mesh = mesh;
     this.physicsWorld.addRigidBody(body);
   }
 
