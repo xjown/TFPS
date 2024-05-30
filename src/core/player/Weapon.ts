@@ -10,6 +10,7 @@ import {
   MOUSE_IS_DOWN,
   DECAL_A,
   DECAL_C,
+  AK_TEXTURE,
 } from '@/configs';
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry';
 
@@ -58,6 +59,9 @@ export default class Weapon extends Loader {
 
     this._decal.alphaMap = decal_a;
     this._decal.map = decal_c;
+
+    flash_scene.scale.set(0.2, 0.2, 0.2);
+    flash_scene.position.set(0.08, -0.08, -2);
 
     ak_scene.scale.set(0.05, 0.05, 0.05);
     ak_scene.position.set(0.04, -0.03, 0);
@@ -159,11 +163,15 @@ export default class Weapon extends Loader {
       );
       this._step += 0.08;
     }
-    if (this._mouseDown && this._lastTime - this._shootTime > 150) {
+    if (this._mouseDown && this._lastTime - this._shootTime > 100) {
       this._sound.isPlaying && this._sound.stop();
       this._sound.play();
+      this._ak_flash_scene.rotation.z += time * 50;
+      this._ak_flash_scene.visible = true;
       this._Raycast();
       this._shootTime = this._lastTime;
+    } else {
+      this._ak_flash_scene.visible = false;
     }
 
     for (let item of this._decalQueue) {

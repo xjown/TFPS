@@ -22,6 +22,9 @@ export const DECAL_C = new URL('../assets/ak47/decal_c.jpg', import.meta.url)
 export const DECAL_N = new URL('../assets/ak47/decal_n.jpg', import.meta.url)
   .href;
 
+export const AK_TEXTURE = new URL('../assets/ak47/ak.png', import.meta.url)
+  .href;
+
 export const GUN = new URL('../assets/ak47/gun.glb', import.meta.url).href;
 export const GUN_HAND = new URL('../assets/ak47/ak47.glb', import.meta.url)
   .href;
