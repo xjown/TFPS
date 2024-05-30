@@ -195,7 +195,7 @@ export default class PlayControl extends Component {
   }
 
   private _onMouseMove() {
-    const mouseSpeed = 0.002;
+    const mouseSpeed = 0.0015;
     this._event.addEventListener(MOUSE_EVENT, ({ message }) => {
       if (!this._isLock) return;
       this._angle.x -= message.movementX * mouseSpeed;

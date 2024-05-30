@@ -8,9 +8,13 @@ import {
   GUN_SOUND,
   ACTION_EVENT_NAME,
   MOUSE_IS_DOWN,
+  DECAL_A,
+  DECAL_C,
 } from '@/configs';
+import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry';
 
-import type { Object3D } from 'three';
+import type { RayCastResultType } from '../ammo';
+import type { Object3D, Mesh as MeshType } from 'three';
 import type ActionEvent from '../events/ActionEvent';
 import type Core from '../index';
 
@@ -26,6 +30,17 @@ export default class Weapon extends Loader {
   ) as ActionEvent;
   private _step: number = 0.5;
   private _mouseDown: boolean = false;
+  private _lastTime: number = new Date().getTime();
+  private _shootTime: number = new Date().getTime();
+  private _decalQueue: { mesh: MeshType; time: number }[] = [];
+  private _decal = new MeshBasicMaterial({
+    polygonOffset: true,
+    polygonOffsetFactor: -4,
+    polygonOffsetUnits: 1,
+    transparent: true,
+    depthTest: true,
+    depthWrite: false,
+  });
 
   constructor(instance: Core) {
     super();
@@ -38,6 +53,12 @@ export default class Weapon extends Loader {
     const { scene: ak_scene } = await this.loadGLTF(GUN_HAND);
     const { scene: flash_scene } = await this.loadGLTF(GUN_FLASH);
     const sound = await this.loadAudio(GUN_SOUND);
+    const decal_a = await this.loadTexture(DECAL_A);
+    const decal_c = await this.loadTexture(DECAL_C);
+
+    this._decal.alphaMap = decal_a;
+    this._decal.map = decal_c;
+
     ak_scene.scale.set(0.05, 0.05, 0.05);
     ak_scene.position.set(0.04, -0.03, 0);
     ak_scene.setRotationFromEuler(
@@ -48,6 +69,7 @@ export default class Weapon extends Loader {
     flash_scene.visible = false;
 
     this._sound.setBuffer(sound);
+    this._sound.offset = 0.2;
 
     this._ak_scene = ak_scene;
     this._ak_flash_scene = flash_scene;
@@ -78,32 +100,54 @@ export default class Weapon extends Loader {
   private _Raycast() {
     const start = new Vector3(0, 0, -1.0).unproject(this._instance.camera);
     const to = new Vector3(0, 0, 1.0).unproject(this._instance.camera);
-    const result = {
+    const result: RayCastResultType = {
       intersectionPoint: new Vector3(),
       intersectionNormal: new Vector3(),
     };
-    if (AmmoHelper.rayCast(start, to, this._instance.physicsWorld, result)) {
-      // const rigidBody = Ammo.castObject<typeof Ammo.btRigidBody>(
-      //   result.collisionObject,
-      //   Ammo.btRigidBody
-      // );
-      var pointGeometry = new BufferGeometry();
-      pointGeometry.attributes.position = new BufferAttribute(
-        new Float32Array([
-          result.intersectionPoint.x,
-          result.intersectionPoint.y,
-          result.intersectionPoint.z,
-        ]),
-        3
+
+    if (
+      AmmoHelper.rayCast(
+        start,
+        to,
+        this._instance.physicsWorld,
+        result,
+        ~AmmoHelper.collisionFilterGroup.SensorTrigger
+      )
+    ) {
+      const rigid = Ammo.castObject<typeof Ammo.btRigidBody>(
+        result.collisionObject,
+        Ammo.btRigidBody
       );
-      var pointMaterial = new PointsMaterial({ size: 0.1, color: 0xff0000 });
-      var point = new Points(pointGeometry, pointMaterial);
-      this._instance.scene.add(point);
+      if ('mesh' in rigid && (rigid as any).mesh) {
+        const mat4 = new Matrix4().lookAt(
+          new Vector3(0, 0, 0),
+          result.intersectionNormal,
+          new Vector3(0, 1, 0)
+        );
+        const rot = new Euler().setFromRotationMatrix(mat4);
+        const size = Math.random() * 0.4 + 0.2;
+        const m = new Mesh(
+          new DecalGeometry(
+            // @ts-ignore
+            rigid.mesh,
+            result.intersectionPoint,
+            rot,
+            new Vector3(size, size, size)
+          ),
+          this._decal
+        );
+        this._decalQueue.push({
+          time: new Date().getTime(),
+          mesh: m,
+        });
+        this._instance.scene.add(m);
+      }
     }
   }
 
   update(time: number) {
     if (!this._ak_scene.visible) return;
+    this._lastTime = new Date().getTime();
     if (
       this._actionEvent.downDowning.KeyW ||
       this._actionEvent.downDowning.KeyS ||
@@ -115,8 +159,18 @@ export default class Weapon extends Loader {
       );
       this._step += 0.08;
     }
-    if (this._mouseDown) {
+    if (this._mouseDown && this._lastTime - this._shootTime > 150) {
+      this._sound.isPlaying && this._sound.stop();
+      this._sound.play();
       this._Raycast();
+      this._shootTime = this._lastTime;
+    }
+
+    for (let item of this._decalQueue) {
+      if (new Date().getTime() - item.time > 1000 * 2) {
+        this._decalQueue.splice(this._decalQueue.indexOf(item), 1);
+        this._instance.scene.remove(item.mesh);
+      }
     }
   }
 }

@@ -128,7 +128,8 @@ class AmmoHelper {
     start: Vector3,
     end: Vector3,
     physicsWorld: Ammo.btDiscreteDynamicsWorld,
-    result: RayCastResultType
+    result: RayCastResultType,
+    collisionMask: number
   ) {
     this._startRayVector.setValue(start.x, start.y, start.z);
     this._endRayVector.setValue(end.x, end.y, end.z);
@@ -141,6 +142,7 @@ class AmmoHelper {
     rayCallBack.set_m_closestHitFraction(1);
     // @ts-ignore
     rayCallBack.set_m_collisionObject(undefined);
+    rayCallBack.set_m_collisionFilterMask(collisionMask);
 
     physicsWorld.rayTest(this._startRayVector, this._endRayVector, rayCallBack);
 

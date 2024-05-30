@@ -15,6 +15,13 @@ export const LIGHT_FLOW_TEXTURE = new URL(
   import.meta.url
 ).href;
 
+export const DECAL_A = new URL('../assets/ak47/decal_a.jpg', import.meta.url)
+  .href;
+export const DECAL_C = new URL('../assets/ak47/decal_c.jpg', import.meta.url)
+  .href;
+export const DECAL_N = new URL('../assets/ak47/decal_n.jpg', import.meta.url)
+  .href;
+
 export const GUN = new URL('../assets/ak47/gun.glb', import.meta.url).href;
 export const GUN_HAND = new URL('../assets/ak47/ak47.glb', import.meta.url)
   .href;

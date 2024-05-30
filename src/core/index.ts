@@ -163,7 +163,7 @@ export default class Core {
 
   private update() {
     window.requestAnimationFrame(() => {
-      const time = Math.min(1.0 / 30.0, this.clock.getDelta());
+      const time = Math.min(1.0 / 60.0, this.clock.getDelta());
 
       this.physicsWorld.stepSimulation(time, 10);
 
