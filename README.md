@@ -49,7 +49,8 @@ d 右移
 
 ## 其他
 
-项目借鉴: [@mohsenheydari](https://github.com/mohsenheydari/three-fps)
+- 项目借鉴: [@mohsenheydari](https://github.com/mohsenheydari/three-fps)
+- 项目随缘更新哈
 
 ## &#x2198; LICENSE
 
