@@ -4,12 +4,6 @@
 
 # TFPS Game
 
-一个基于[Three.js](https://threejs.org/)和[Ammo.js](https://github.com/kripken/ammo.js/)的简单小游戏。因为网上关于[Ammo.js](https://github.com/kripken/ammo.js/)方面的教程太少，自己也是一个急性子。视频教程太慢。所以索性就在所以就琢磨大佬的源码。
-
-&#x1F648;&#x1F648;主要还是闲的没事 &#x1F648; &#x1F648;
-
-en.....站在巨人的肩上确实成长很快！！！！
-
 <p align="center">
 
 ![GitHub Repo stars](https://img.shields.io/github/stars/wildTechnician/pavilion)
@@ -20,6 +14,12 @@ en.....站在巨人的肩上确实成长很快！！！！
 ![GitHub last commit](https://img.shields.io/github/last-commit/wildTechnician/pavilion)
 
 </p>
+
+一个基于[Three.js](https://threejs.org/)和[Ammo.js](https://github.com/kripken/ammo.js/)的简单小游戏。因为网上关于[Ammo.js](https://github.com/kripken/ammo.js/)方面的教程太少，自己也是一个急性子。视频教程太慢。所以索性就在所以就琢磨大佬的源码。
+
+&#x1F648;&#x1F648;主要还是闲的没事 &#x1F648; &#x1F648;
+
+en.....站在巨人的肩上确实成长很快！！！！
 
 ## &#x23F3;使用
 
@@ -40,6 +40,16 @@ d 右移
 <p align="center">
     <img src="./public/demo.gif" >
 </p>
+
+## 规划
+
+- &#x274E; 加入后座力、射击距离
+- &#x274E; 加入天空
+- &#x274E; 优化一部分写得略微有些潦草的代码
+
+## 其他
+
+项目借鉴: [@mohsenheydari](https://github.com/mohsenheydari/three-fps)
 
 ## &#x2198; LICENSE
 
