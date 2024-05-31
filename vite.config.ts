@@ -12,7 +12,7 @@ for (let i in Three) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/pavilion/',
+  base: '/TFPS/',
   server: {
     port: 5175,
   },
