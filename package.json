@@ -1,8 +1,10 @@
 {
-  "name": "visual",
+  "name": "tfps",
+  "author": "xiaoju",
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "repository": "https://github.com/wildTechnician/TFPS",
   "scripts": {
     "dev": "vite",
     "build": " vite build",
