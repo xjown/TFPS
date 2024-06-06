@@ -3,6 +3,7 @@ import Loader from '../loader';
 import Component from '../Component';
 import { ACTION_EVENT_NAME, KEY_CODE } from '@/configs';
 import Events from '../events';
+import Sky from './Sky';
 import Collision from '../collision';
 
 import { LightFlowWall } from '@/core/effects';
@@ -18,6 +19,7 @@ export default class World extends Component {
   private _effect!: LightFlowWall;
   private _weapon!: Object3D;
   private _worldPhysics!: WorldPhysics;
+  private _sky: Sky;
 
   public ConvexHullShape: Object3D[] = [];
   public name: string = 'world';
@@ -32,6 +34,7 @@ export default class World extends Component {
     this._loader = new Loader();
     this._instance = instance;
     this.collision = new Collision();
+    this._sky = new Sky(instance);
   }
 
   initialize() {
@@ -68,6 +71,7 @@ export default class World extends Component {
   }
 
   async load() {
+    await this._sky.load();
     const { scene } = await this._loader.loadGLTF(BORDER_TEXTURE);
     this._weapon = (await this._loader.loadGLTF(GUN)).scene;
 
