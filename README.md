@@ -17,9 +17,6 @@
 
 一个基于[Three.js](https://threejs.org/)和[Ammo.js](https://github.com/kripken/ammo.js/)的简单小游戏。因为网上关于[Ammo.js](https://github.com/kripken/ammo.js/)方面的教程太少，自己也是一个急性子。视频教程太慢。所以索性就琢磨大佬的源码。
 
-&#x1F648;&#x1F648;主要还是闲的没事 &#x1F648; &#x1F648;
-
-en.....站在巨人的肩上确实成长很快！！！！
 
 ## &#x23F3;使用
 
