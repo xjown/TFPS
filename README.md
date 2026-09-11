@@ -1,3 +1,5 @@
+
+
 <p align="center">
     <img src="./public/logo.png" width="100" height="100" alt="logo">
 </p>
@@ -31,6 +33,8 @@ a 左移
 d 右移
 
 左键 开火
+
+F 拾取
 
 ## &#x2615; 演示
 
